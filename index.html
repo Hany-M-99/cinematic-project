@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>معرض الطيور السينمائي</title>
+    <title>منصة الطيور الساحرة - تسجيل الدخول والمعرض السينمائي</title>
     <style>
         * {
             margin: 0;
@@ -26,8 +26,8 @@
         /* ذيل النار والمؤشر المضيء */
         .fire-trail {
             position: absolute;
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             background: #80A416;
             border-radius: 50%;
             pointer-events: none;
@@ -38,42 +38,147 @@
 
         .trail-particle {
             position: absolute;
-            width: 6px;
-            height: 6px;
+            width: 7px;
+            height: 7px;
             background: radial-gradient(circle, #80A416 0%, #08652C 100%);
             border-radius: 50%;
             pointer-events: none;
             z-index: 9998;
-            animation: fadeOut 0.5s linear forwards;
+            animation: fadeOutParticle 0.6s linear forwards;
         }
 
-        @keyframes fadeOut {
-            0% { transform: scale(1); opacity: 0.9; }
+        @keyframes fadeOutParticle {
+            0% { transform: scale(1); opacity: 1; }
             100% { transform: scale(0.2); opacity: 0; }
         }
 
-        /* البطاقة الرئيسية لعرض الطيور (مطابقة للصورة الأصلية تماماً) */
+        /* شاشات النظام (التحكم في التبديل بين تسجيل الدخول والمعرض) */
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.95);
+        }
+
+        .active-screen {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+
+        /* --- تصميم صفحة تسجيل الدخول المفصلة --- */
+        .login-card {
+            width: 420px;
+            background: rgba(3, 40, 32, 0.85);
+            border: 2px solid rgba(128, 164, 22, 0.4);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(128, 164, 22, 0.2);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .login-header h2 {
+            color: #80A416;
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(128, 164, 22, 0.4);
+        }
+
+        .login-header p {
+            color: #C5C764;
+            font-size: 13px;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-size: 14px;
+            color: #80A416;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(8, 101, 44, 0.15);
+            border: 1px solid rgba(128, 164, 22, 0.3);
+            border-radius: 8px;
+            color: #C5C764;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #80A416;
+            box-shadow: 0 0 10px rgba(128, 164, 22, 0.5);
+            background: rgba(8, 101, 44, 0.3);
+        }
+
+        .login-btn {
+            margin-top: 10px;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #80A416, #08652C);
+            border: none;
+            border-radius: 8px;
+            color: #032820;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(128, 164, 22, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(128, 164, 22, 0.8);
+        }
+
+        /* --- تصميم معرض الصور السينمائي بعد تسجيل الدخول --- */
         .gallery-card {
             position: relative;
-            width: 900px;
-            height: 500px;
+            width: 950px;
+            height: 520px;
             background-size: cover;
             background-position: center;
             border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(3, 40, 32, 0.9), 0 0 0 2px rgba(128, 164, 22, 0.4);
+            box-shadow: 0 30px 60px rgba(3, 40, 32, 0.95), 0 0 0 2px rgba(128, 164, 22, 0.5);
             overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             padding: 40px;
-            transition: background-image 0.6s ease-in-out;
+            transition: background-image 0.7s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* طبقة التدرج الداكن (Overlay) لجعل النصوص واضحة على يسار الصورة */
         .gallery-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(90deg, rgba(3, 40, 32, 0.9) 0%, rgba(3, 40, 32, 0.6) 50%, rgba(3, 40, 32, 0.2) 100%);
+            background: linear-gradient(90deg, rgba(3, 40, 32, 0.92) 0%, rgba(3, 40, 32, 0.65) 55%, rgba(3, 40, 32, 0.25) 100%);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -81,43 +186,42 @@
             z-index: 1;
         }
 
-        /* قسم المعلومات على اليسار */
         .info-section {
-            max-width: 400px;
+            max-width: 420px;
             z-index: 2;
-            animation: fadeInText 0.5s ease;
+            animation: fadeInTextContent 0.6s ease;
         }
 
-        @keyframes fadeInText {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes fadeInTextContent {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .info-section h1 {
             color: #80A416;
-            font-size: 36px;
+            font-size: 38px;
             font-weight: 800;
             margin-bottom: 15px;
-            text-shadow: 0 0 10px rgba(128, 164, 22, 0.5);
+            text-shadow: 0 0 15px rgba(128, 164, 22, 0.6);
             letter-spacing: 1px;
         }
 
         .info-section p {
             color: #C5C764;
-            font-size: 14px;
-            line-height: 1.6;
+            font-size: 15px;
+            line-height: 1.7;
             margin-bottom: 25px;
-            opacity: 0.9;
+            opacity: 0.95;
         }
 
         .action-btn {
             background: linear-gradient(135deg, #80A416, #08652C);
             border: none;
-            padding: 10px 25px;
+            padding: 12px 28px;
             color: #032820;
             font-weight: bold;
-            font-size: 14px;
-            border-radius: 6px;
+            font-size: 15px;
+            border-radius: 8px;
             cursor: pointer;
             box-shadow: 0 0 15px rgba(128, 164, 22, 0.4);
             transition: transform 0.2s, box-shadow 0.2s;
@@ -128,7 +232,6 @@
             box-shadow: 0 0 25px rgba(128, 164, 22, 0.8);
         }
 
-        /* شريط الصور المصغرة (Thumbnails) في أسفل البطاقة تماماً مثل الصور المرفقة */
         .thumbnails-bar {
             display: flex;
             gap: 15px;
@@ -138,8 +241,8 @@
         }
 
         .thumb-item {
-            width: 75px;
-            height: 100px;
+            width: 80px;
+            height: 105px;
             border-radius: 12px;
             overflow: hidden;
             border: 2px solid rgba(128, 164, 22, 0.4);
@@ -157,37 +260,77 @@
 
         .thumb-item:hover, .thumb-item.active {
             border-color: #80A416;
-            transform: translateY(-6px);
-            box-shadow: 0 8px 20px rgba(128, 164, 22, 0.6);
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(128, 164, 22, 0.7);
+        }
+
+        .logout-link {
+            position: absolute;
+            top: 25px;
+            left: 30px;
+            color: #C5C764;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: underline;
+            z-index: 10;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .logout-link:hover {
+            opacity: 1;
+            color: #80A416;
         }
     </style>
 </head>
 <body>
 
-    <!-- ذيل النار والمؤشر -->
+    <!-- مؤشر النار الذكي -->
     <div class="fire-trail" id="fireTrail"></div>
 
-    <!-- حاوية معرض الصور السينمائي -->
-    <div class="gallery-card" id="galleryCard">
-        <div class="gallery-overlay">
-            
-            <!-- المعلومات على اليسار -->
-            <div class="info-section">
-                <h1 id="birdTitle">BALTIMORE ORIOLES</h1>
-                <p id="birdDesc">طائر يتميز بألوانه البرتقالية والسوداء المذهلة، يتواجد في الغابات والأشجار الكثيفة ليقدم لوحة فنية ساحرة.</p>
-                <button class="action-btn" onclick="alert('تمت الإضافة إلى السلة بنجاح!')">أضف إلى السلة</button>
+    <!-- شاشة تسجيل الدخول -->
+    <div class="screen active-screen" id="loginScreen">
+        <div class="login-card">
+            <div class="login-header">
+                <h2>تسجيل الدخول</h2>
+                <p>أدخل بيانات حسابك للمتابعة إلى المعرض</p>
             </div>
-
-            <!-- الشرائح المصغرة بالأسفل -->
-            <div class="thumbnails-bar" id="thumbnailsBar">
-                <!-- يتم تعبئتها ديناميكياً -->
+            <div class="input-group">
+                <label>اسم المستخدم أو البريد الإلكتروني</label>
+                <input type="text" id="usernameInput" placeholder="أدخل اسم المستخدم...">
             </div>
+            <div class="input-group">
+                <label>كلمة المرور</label>
+                <input type="password" id="passwordInput" placeholder="••••••••">
+            </div>
+            <button class="login-btn" onclick="handleLogin()">دخول إلى المعرض</button>
+        </div>
+    </div>
 
+    <!-- شاشة المعرض السينمائي (تظهر بعد الدخول) -->
+    <div class="screen hidden" id="galleryScreen">
+        <span class="logout-link" onclick="handleLogout()">تسجيل الخروج</span>
+        <div class="gallery-card" id="galleryCard">
+            <div class="gallery-overlay">
+                
+                <!-- معلومات العنصر على اليسار -->
+                <div class="info-section">
+                    <h1 id="birdTitle">عنصر رقم 1</h1>
+                    <p id="birdDesc">هذه معلومات تفصيلية عن العنصر الأول، تم اختيار الصورة بعناية لتناسب الألوان والتصميم الأخضر الساحر.</p>
+                    <button class="action-btn" onclick="alert('تمت الإضافة إلى السلة بنجاح!')">أضف إلى السلة</button>
+                </div>
+
+                <!-- شريط الكروت المصغرة في الأسفل -->
+                <div class="thumbnails-bar" id="thumbnailsBar">
+                    <!-- يتم توليدها ديناميكياً -->
+                </div>
+
+            </div>
         </div>
     </div>
 
     <script>
-        // حركة مؤشر النار الذكي
+        /* تحريك ذيل النار والمؤشر */
         const trail = document.getElementById('fireTrail');
         let mouseX = window.innerWidth / 2;
         let mouseY = window.innerHeight / 2;
@@ -206,7 +349,7 @@
             particle.style.left = x + 'px';
             particle.style.top = y + 'px';
             document.body.appendChild(particle);
-            setTimeout(() => { particle.remove(); }, 500);
+            setTimeout(() => { particle.remove(); }, 600);
         }
 
         function animateTrail() {
@@ -218,42 +361,67 @@
         }
         animateTrail();
 
-        // بيانات الطيور وصورها ومعلوماتها الدقيقة
-        const birdsData = [
+        /* بيانات العناصر والطيور للمعرض السينمائي */
+        const galleryData = [
             {
-                title: "BALTIMORE ORIOLES",
-                desc: "طائر يتميز بألوانه البرتقالية والسوداء المذهلة، يتواجد في الغابات والأشجار الكثيفة ليقدم لوحة فنية ساحرة.",
+                title: "عنصر رقم 1",
+                desc: "هذه معلومات تفصيلية عن العنصر الأول، تم اختيار الصورة بعناية لتناسب الألوان والتصميم الأخضر الساحر.",
                 img: "https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?w=1000"
             },
             {
-                title: "EMERALD HUMMINGBIRD",
-                desc: "طائر الطنان الزمردي المتألق بألوانه الخضراء الزاهية وقدرته الفائقة على الثبات السريع في الهواء.",
+                title: "عنصر رقم 2",
+                desc: "هذه معلومات تفصيلية عن العنصر الثاني، يعكس روعة الطبيعة وجمال الطيور النادرة بألوانها الزاهية.",
                 img: "https://images.unsplash.com/photo-1522858541146-5fded364b928?w=1000"
             },
             {
-                title: "VIBRANT FOREST BIRD",
-                desc: "مخلوق رائع يجمع بين درجات البرتقالي والأخضر الفاتح ليتناغم مع الطبيعة الاستوائية الخلابة.",
+                title: "عنصر رقم 3",
+                desc: "هذه معلومات تفصيلية عن العنصر الثالث، مصمم خصيصاً ليمنحك تجربة بصرية مذهلة وتفاعلية فريدة.",
                 img: "https://images.unsplash.com/photo-1555169062-013468b476cb?w=1000"
             },
             {
-                title: "BLUE JAY BIRD",
-                desc: "طائر القيق الأزرق النابض بالحياة، يضفي مظهراً جمالياً رائعاً بتدرجات ألوانه النورسية المميزة.",
+                title: "عنصر رقم 4",
+                desc: "هذه معلومات تفصيلية عن العنصر الرابع، يعرض تناغماً فريداً بين خلفية الشاشة وتفاصيل النصوص الجانبية.",
                 img: "https://images.unsplash.com/photo-1544942507-94f7c126d409?w=1000"
             }
         ];
 
+        /* التحكم في التنقل بين صفحة الدخول والمعرض */
+        function handleLogin() {
+            const user = document.getElementById('usernameInput').value;
+            if(user.trim() === "") {
+                alert('الرجاء إدخال اسم المستخدم أولاً!');
+                return;
+            }
+            document.getElementById('loginScreen').classList.remove('active-screen');
+            document.getElementById('loginScreen').classList.add('hidden');
+            
+            setTimeout(() => {
+                document.getElementById('galleryScreen').classList.remove('hidden');
+                document.getElementById('galleryScreen').classList.add('active-screen');
+            }, 300);
+        }
+
+        function handleLogout() {
+            document.getElementById('galleryScreen').classList.remove('active-screen');
+            document.getElementById('galleryScreen').classList.add('hidden');
+            
+            setTimeout(() => {
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('loginScreen').classList.add('active-screen');
+            }, 300);
+        }
+
+        /* إدارة عرض محتوى المعرض والصور المصغرة */
         const galleryCard = document.getElementById('galleryCard');
         const birdTitle = document.getElementById('birdTitle');
         const birdDesc = document.getElementById('birdDesc');
         const thumbnailsBar = document.getElementById('thumbnailsBar');
 
-        // دالة عرض الطائر وتغيير الخلفية والمعلومات
-        function selectBird(index) {
-            galleryCard.style.backgroundImage = url('${birdsData[index].img}');
-            birdTitle.innerText = birdsData[index].title;
-            birdDesc.innerText = birdsData[index].desc;
+        function selectGalleryItem(index) {
+            galleryCard.style.backgroundImage = url('${galleryData[index].img}');
+            birdTitle.innerText = galleryData[index].title;
+            birdDesc.innerText = galleryData[index].desc;
 
-            // تحديث الكارت النشط في الشريط السفلي
             const thumbs = document.querySelectorAll('.thumb-item');
             thumbs.forEach((th, idx) => {
                 if (idx === index) {
@@ -264,20 +432,19 @@
             });
         }
 
-        // بناء الـ Thumbnails تلقائياً في الأسفل
-        function initGallery() {
+        function initGalleryContent() {
             thumbnailsBar.innerHTML = '';
-            birdsData.forEach((bird, index) => {
+            galleryData.forEach((item, index) => {
                 thumbnailsBar.innerHTML += `
-                    <div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="selectBird(${index})">
-                        <img src="${bird.img}" alt="${bird.title}">
+                    <div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="selectGalleryItem(${index})">
+                        <img src="${item.img}" alt="${item.title}">
                     </div>
                 `;
             });
-            selectBird(0); // البدء بالعنصر الأول
+            selectGalleryItem(0);
         }
 
-        initGallery();
+        initGalleryContent();
     </script>
 </body>
 </html>
