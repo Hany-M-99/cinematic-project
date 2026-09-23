@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>البطاقة السينمائية الذكية</title>
+    <title>النظام السينمائي الأخضر</title>
     <style>
         * {
             margin: 0;
@@ -13,8 +13,8 @@
         }
 
         body {
-            background-color: #051822; /* لون الخلفية الداكن المستخرج من الباليت */
-            color: #D4C9C7;
+            background-color: #032820; /* اللون الأخضر الداكن الأساسي من باليت الصور */
+            color: #C5C764;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -23,16 +23,16 @@
             position: relative;
         }
 
-        /* ذيل حبل النار المضيء للمؤشر */
+        /* حبل النار والمؤشر المتحرك */
         .fire-trail {
             position: absolute;
             width: 10px;
             height: 10px;
-            background: #AA7452;
+            background: #80A416;
             border-radius: 50%;
             pointer-events: none;
             transform: translate(-50%, -50%);
-            box-shadow: 0 0 15px #AA7452, 0 0 30px #7C5841, 0 0 45px #ff5722;
+            box-shadow: 0 0 15px #80A416, 0 0 30px #08652C, 0 0 45px #C5C764;
             z-index: 9999;
         }
 
@@ -40,7 +40,7 @@
             position: absolute;
             width: 6px;
             height: 6px;
-            background: radial-gradient(circle, #AA7452 0%, #7C5841 100%);
+            background: radial-gradient(circle, #80A416 0%, #08652C 100%);
             border-radius: 50%;
             pointer-events: none;
             z-index: 9998;
@@ -48,25 +48,25 @@
         }
 
         @keyframes fadeOut {
-            0% { transform: scale(1); opacity: 0.8; }
+            0% { transform: scale(1); opacity: 0.9; }
             100% { transform: scale(0.2); opacity: 0; }
         }
 
-        /* الكارت الرئيسي (Glassmorphism Card) مطابق للصورة المطلوبة */
+        /* البطاقة الرئيسية لتسجيل الدخول (مطابقة للصورة الأولى) */
         .main-card {
             position: relative;
             width: 850px;
             height: 480px;
-            background: rgba(45, 56, 62, 0.65);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(124, 88, 65, 0.4);
+            background: rgba(8, 101, 44, 0.25);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(128, 164, 22, 0.4);
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(170, 116, 82, 0.1);
+            box-shadow: 0 20px 40px rgba(3, 40, 32, 0.8), inset 0 0 25px rgba(128, 164, 22, 0.15);
             display: flex;
             overflow: hidden;
+            transition: all 0.8s ease;
         }
 
-        /* القسم الأيمن في الكارت (اللمبة والإضاءة والروبوت) */
         .card-left {
             flex: 1;
             position: relative;
@@ -74,90 +74,119 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            padding-top: 30px;
-            border-left: 1px solid rgba(124, 88, 65, 0.2);
+            padding-top: 25px;
+            border-left: 1px solid rgba(128, 164, 22, 0.2);
         }
 
-        /* اللمبة المنسدلة */
+        /* اللمبة الخضراء تماماً مثل الصورة الأولى */
+        .lamp-container {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 5;
+            transition: transform 0.2s;
+        }
+
+        .lamp-container:hover {
+            transform: scale(1.05);
+        }
+
         .lamp {
-            width: 70px;
-            height: 40px;
-            background: #2D383E;
-            border: 2px solid #969A9E;
+            width: 75px;
+            height: 45px;
+            background: #08652C;
+            border: 2px solid #80A416;
             border-radius: 0 0 50% 50%;
             position: relative;
-            box-shadow: 0 0 25px rgba(170, 116, 82, 0.4);
-            z-index: 3;
+            box-shadow: 0 0 30px #80A416, inset 0 0 10px #C5C764;
         }
 
         .lamp::before {
             content: '';
             position: absolute;
             top: -25px;
-            left: 22px;
-            width: 22px;
+            left: 24px;
+            width: 23px;
             height: 25px;
-            background: #969A9E;
+            background: #80A416;
         }
 
-        /* مخروط النور الخالد داخل الكارت */
+        /* مخروط الضوء الأخضر المتدفق */
         .light-beam {
             position: absolute;
             top: 60px;
             width: 0;
             height: 0;
-            border-left: 140px solid transparent;
-            border-right: 140px solid transparent;
-            border-top: 320px solid rgba(170, 116, 82, 0.12);
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 340px solid rgba(128, 164, 22, 0.18);
             pointer-events: none;
             z-index: 1;
-            filter: drop-shadow(0 0 15px rgba(170, 116, 82, 0.2));
+            filter: drop-shadow(0 0 20px rgba(128, 164, 22, 0.3));
         }
 
-        /* الروبوت الدائري الصغير كما في الصورة */
+        /* الروبوت الأخضر المطابق للصورة الأولى (مخفي مبدئياً لحين الضغط على اللمبة) */
         .robot-circle {
             position: absolute;
-            bottom: 40px;
-            width: 75px;
-            height: 75px;
-            background: #051822;
-            border: 2px solid #AA7452;
+            bottom: 45px;
+            width: 85px;
+            height: 85px;
+            background: #032820;
+            border: 2px solid #80A416;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 8px;
-            box-shadow: 0 0 20px rgba(170, 116, 82, 0.5);
+            gap: 10px;
+            box-shadow: 0 0 25px #80A416;
             z-index: 3;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .robot-circle.show {
+            opacity: 1;
+            transform: scale(1);
         }
 
         .robot-eye {
-            width: 10px;
-            height: 14px;
-            background: #D4C9C7;
+            width: 12px;
+            height: 16px;
+            background: #C5C764;
             border-radius: 50%;
-            box-shadow: 0 0 8px #D4C9C7;
+            box-shadow: 0 0 10px #C5C764;
         }
 
-        /* القسم الأيسر في الكارت (نموذج تسجيل الدخول) */
+        /* خانة تسجيل الدخول (تظهر تدريجياً بعد الروبوت) */
         .card-right {
             flex: 1.2;
             padding: 40px;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.6s ease 0.3s;
+        }
+
+        .card-right.show {
+            opacity: 1;
+            transform: translateX(0);
         }
 
         .card-right h2 {
-            color: #AA7452;
-            font-size: 24px;
+            color: #80A416;
+            font-size: 26px;
             margin-bottom: 5px;
         }
 
         .card-right p {
-            color: #969A9E;
+            color: #C5C764;
             font-size: 13px;
             margin-bottom: 25px;
+            opacity: 0.8;
         }
 
         .input-group {
@@ -166,37 +195,37 @@
 
         .input-group label {
             display: block;
-            font-size: 12px;
-            color: #969A9E;
+            font-size: 11px;
+            color: #C5C764;
             margin-bottom: 5px;
-            text-transform: uppercase;
             letter-spacing: 1px;
+            font-weight: bold;
         }
 
         .input-group input {
             width: 100%;
             padding: 10px 15px;
-            background: #051822;
-            border: 1px solid #2D383E;
+            background: #032820;
+            border: 1px solid #08652C;
             border-radius: 8px;
-            color: #D4C9C7;
+            color: #C5C764;
             outline: none;
             font-size: 14px;
             transition: border-color 0.3s;
         }
 
         .input-group input:focus {
-            border-color: #AA7452;
-            box-shadow: 0 0 8px rgba(170, 116, 82, 0.3);
+            border-color: #80A416;
+            box-shadow: 0 0 10px rgba(128, 164, 22, 0.4);
         }
 
         .sign-in-btn {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(135deg, #AA7452, #7C5841);
+            background: linear-gradient(135deg, #80A416, #08652C);
             border: none;
             border-radius: 8px;
-            color: #D4C9C7;
+            color: #032820;
             font-weight: bold;
             font-size: 15px;
             cursor: pointer;
@@ -206,7 +235,7 @@
 
         .sign-in-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 0 15px rgba(170, 116, 82, 0.5);
+            box-shadow: 0 0 20px rgba(128, 164, 22, 0.6);
         }
 
         .error-msg {
@@ -217,62 +246,130 @@
             display: none;
         }
 
-        /* واجهة المتجر المخفية التي تظهر بعد تسجيل الدخول الناجح */
+        /* واجهة المتجر والشرائح التفاعلية (بعد تسجيل الدخول الناجح) */
         #mainStore {
             display: none;
-            width: 100%;
-            min-height: 100vh;
+            width: 100vw;
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            transition: background-image 0.8s ease-in-out;
+        }
+
+        .store-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(3, 40, 32, 0.75);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             padding: 40px;
-            background: #051822;
         }
 
-        #mainStore h1 {
-            color: #AA7452;
-            text-align: center;
-            margin-bottom: 30px;
+        .content-display {
+            max-width: 600px;
+            margin-top: 40px;
+            animation: fadeInContent 0.8s ease;
         }
 
-        .store-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            max-width: 1100px;
-            margin: 0 auto;
+        @keyframes fadeInContent {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .product-card {
-            background: #2D383E;
-            border: 1px solid #7C5841;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
+        .content-display h1 {
+            color: #80A416;
+            font-size: 42px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(128, 164, 22, 0.4);
         }
 
-        .product-card h3 { color: #D4C9C7; margin-bottom: 10px; }
-        .product-card p { color: #AA7452; font-weight: bold; }
+        .content-display p {
+            color: #C5C764;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .add-to-cart-btn {
+            background: linear-gradient(135deg, #80A416, #08652C);
+            border: none;
+            padding: 12px 30px;
+            color: #032820;
+            font-weight: bold;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(128, 164, 22, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .add-to-cart-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* الشرائح المصغرة بالأسفل (Thumbnail Slider Cards) */
+        .thumbnails-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .thumb-card {
+            width: 110px;
+            height: 140px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid rgba(128, 164, 22, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            background: #032820;
+            flex-shrink: 0;
+        }
+
+        .thumb-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .thumb-card:hover, .thumb-card.active {
+            border-color: #80A416;
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(128, 164, 22, 0.4);
+        }
     </style>
 </head>
 <body>
 
-    <!-- ذيل حبل النار للمؤشر -->
+    <!-- حبل النار والمؤشر -->
     <div class="fire-trail" id="fireTrail"></div>
 
-    <!-- البطاقة الرئيسية -->
+    <!-- البطاقة الأولى (تسجيل الدخول واللمبة والروبوت) -->
     <div class="main-card" id="loginCardContainer">
-        <!-- القسم الأيمن (اللمبة والنور والروبوت) -->
         <div class="card-left">
-            <div class="lamp"></div>
+            <!-- الضغط على اللمبة يبدأ العرض السينمائي -->
+            <div class="lamp-container" onclick="revealElements()">
+                <div class="lamp"></div>
+            </div>
             <div class="light-beam"></div>
-            <div class="robot-circle">
+            
+            <!-- الروبوت الأخضر -->
+            <div class="robot-circle" id="robotElement">
                 <div class="robot-eye"></div>
                 <div class="robot-eye"></div>
             </div>
         </div>
 
-        <!-- القسم الأيسر (نموذج الدخول) -->
-        <div class="card-right">
+        <div class="card-right" id="rightSection">
             <h2>Welcome Back.</h2>
-            <p>أدخل بيانات الحساب لتتمكن من الدخول</p>
+            <p>Pull the cord to illuminate your path & sign in</p>
             
             <div class="input-group">
                 <label>USERNAME</label>
@@ -289,10 +386,19 @@
         </div>
     </div>
 
-    <!-- واجهة المتجر الرئيسية -->
+    <!-- واجهة المتجر التفاعلية بالصور (تظهر بعد تسجيل الدخول) -->
     <div id="mainStore">
-        <h1>أهلاً بك يا فنان في النظام الداخلي!</h1>
-        <div class="store-grid" id="productsGrid"></div>
+        <div class="store-overlay">
+            <div class="content-display" id="contentDisplay">
+                <h1 id="itemTitle">عنصر رقم 1</h1>
+                <p id="itemDesc">هذه معلومات تفصيلية عن العنصر الأول، تم اختيار الصورة بعناية لتناسب الألوان والتصميم الأخضر الساحر.</p>
+                <button class="add-to-cart-btn" onclick="alert('تمت الإضافة إلى السلة بنجاح!')">أضف إلى السلة</button>
+            </div>
+
+            <div class="thumbnails-container" id="thumbnailsContainer">
+                <!-- سيتم تعبئة الصور الـ 10 هنا برمجياً -->
+            </div>
+        </div>
     </div>
 
     <script>
@@ -315,7 +421,6 @@
             particle.style.left = x + 'px';
             particle.style.top = y + 'px';
             document.body.appendChild(particle);
-
             setTimeout(() => { particle.remove(); }, 500);
         }
 
@@ -328,7 +433,39 @@
         }
         animateTrail();
 
-        // دالة التحقق من بيانات الدخول
+        // تتابع ظهور العناصر عند النقر على اللمبة
+        let isRevealed = false;
+        function revealElements() {
+            if (isRevealed) return;
+            isRevealed = true;
+
+            const robot = document.getElementById('robotElement');
+            const rightSec = document.getElementById('rightSection');
+
+            // 1. يظهر الروبوت الأخضر أولاً
+            robot.classList.add('show');
+
+            // 2. بعد جزء من الثانية تظهر خانة تسجيل الدخول من الناحية الأخرى
+            setTimeout(() => {
+                rightSec.classList.add('show');
+            }, 300);
+        }
+
+        // بيانات الصور الـ 10 (طيور وطبيعة خلابة متناسقة مع الألوان)
+        const items = [
+            { title: "البلشون الأزرق البديع", desc: "طائر نادر يتميز بريشه الأزرق الخلاب وتواجده الهادئ وسط الطبيعة الخضراء.", img: "https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=1000" },
+            { title: "الهدهد الملكي", desc: "طائر ذو تاج مميز وألوان ترعاه الطبيعة بجمال فريد وداكن متناسق.", img: "https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?w=1000" },
+            { title: "طائر القيق الأزرق", desc: "يتألق بريش أزرق ورمادي ناصع يمنح إضاءة رائعة للخلفية.", img: "https://images.unsplash.com/photo-1544942507-94f7c126d409?w=1000" },
+            { title: "العصفور الذهبي المغرد", desc: "ألوان برتقالية وذهبية مميزة تتماشى بانسجام تام مع درجات الإضاءة.", img: "https://images.unsplash.com/photo-1555169062-013468b476cb?w=1000" },
+            { title: "صقر الغابات الخضراء", desc: "نظرة حادة وحضور قوي يتماشى مع أجواء الروبوت والغموض السينمائي.", img: "https://images.unsplash.com/photo-1611689342806-0863700ce1e4?w=1000" },
+            { title: "طائر الطنان الزمردي", desc: "ألوان متلألئة تتدرج بين الأخضر والأزرق الساحر.", img: "https://images.unsplash.com/photo-1522858541146-5fded364b928?w=1000" },
+            { title: "بومة الليل العميقة", desc: "عيون براقة تسحر اللحظة وتتناسق مع خلفيات النظام الداكنة.", img: "https://images.unsplash.com/photo-1534567153574-2b12153a87f0?w=1000" },
+            { title: "الطائر الناري المضيء", desc: "طائر يجمع بين درجات النحاسي والأخضر الداكن.", img: "https://images.unsplash.com/photo-1444464666168-49d633b86797?w=1000" },
+            { title: "طائر الغابة المطيرة", desc: "بيئة طبيعية خضراء متكاملة تعزز هوية الموقع البصرية.", img: "https://images.unsplash.com/photo-1518992028580-ec6db7f22687?w=1000" },
+            { title: "طائر البجع الهادئ", desc: "صفاء ونقاء يختتم قائمة العناصر بجمال هندسي مبهر.", img: "https://images.unsplash.com/photo-1470240731273-7821a6eeb6bd?w=1000" }
+        ];
+
+        // دالة التحقق من بيانات الدخول والانتقال للمتجر
         function handleLogin() {
             const user = document.getElementById('username').value.trim();
             const pass = document.getElementById('password').value.trim();
@@ -339,19 +476,41 @@
                 const store = document.getElementById('mainStore');
                 store.style.display = 'block';
 
-                const grid = document.getElementById('productsGrid');
-                grid.innerHTML = '';
-                for (let i = 1; i <= 8; i++) {
-                    grid.innerHTML += `
-                        <div class="product-card">
-                            <h3>عنصر رقم ${i}</h3>
-                            <p>$${i * 25}.00</p>
+                // تعيين الصورة الأولى افتراضياً
+                changeBackground(0);
+
+                // توليد الـ 10 صور في الشريط السفلي (Thumbnails)
+                const container = document.getElementById('thumbnailsContainer');
+                container.innerHTML = '';
+                items.forEach((item, index) => {
+                    container.innerHTML += `
+                        <div class="thumb-card ${index === 0 ? 'active' : ''}" onclick="changeBackground(${index})">
+                            <img src="${item.img}" alt="${item.title}">
                         </div>
                     `;
-                }
+                });
             } else {
                 errorMsg.style.display = 'block';
             }
+        }
+
+        // دالة تغيير الخلفية والمعلومات عند النقر على أي صورة في الشرائح
+        function changeBackground(index) {
+            const store = document.getElementById('mainStore');
+            store.style.backgroundImage = url('${items[index].img}');
+            
+            document.getElementById('itemTitle').innerText = items[index].title;
+            document.getElementById('itemDesc').innerText = items[index].desc;
+
+            // تحديث حالة التحديد (Active Card)
+            const cards = document.querySelectorAll('.thumb-card');
+            cards.forEach((card, idx) => {
+                if (idx === index) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
+            });
         }
     </script>
 </body>
