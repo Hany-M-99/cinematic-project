@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hany Cinematic Store</title>
+    <title>المعرض السينمائي الذكي</title>
     <style>
         * {
             margin: 0;
@@ -13,266 +13,488 @@
         }
 
         body {
-            background-color: #0b0f19;
-            color: #ffffff;
+            background-color: #051822; /* اللون الداكن الأساسي من الباليت */
+            color: #D4C9C7; /* اللون الفاتح للنصوص */
+            min-height: 100vh;
             overflow-x: hidden;
-            position: relative;
-            height: 100vh;
-        }
-
-        /* تأثير أثر الماوس (الدخان السينمائي) */
-        .cursor-trail {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: radial-gradient(circle, rgba(0,255,200,0.6) 0%, rgba(0,120,255,0) 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            transition: width 0.2s, height 0.2s;
-            z-index: 9999;
-            filter: blur(4px);
-        }
-
-        /* --- واجهة اللمبة وتسجيل الدخول السينمائية --- */
-        .intro-section {
-            height: 100vh;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             position: relative;
-            transition: background 1s ease;
         }
 
-        /* الوضع السينمائي بعد تشغيل اللمبة */
-        body.cinematic-glow .intro-section {
-            background: radial-gradient(circle at center, #0f2b3d 0%, #060913 80%);
-            box-shadow: inset 0 0 100px rgba(0, 255, 150, 0.05);
-        }
-
-        .lamp-container {
-            cursor: pointer;
-            text-align: center;
-            transition: transform 0.3s ease;
-            margin-bottom: 20px;
-        }
-
-        .lamp-container:hover {
-            transform: scale(1.05);
-        }
-
-        .lamp-icon {
-            font-size: 70px;
-            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4));
-        }
-
-        .pull-string {
-            width: 3px;
-            height: 50px;
-            background: #d4af37;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        .pull-string::after {
-            content: '';
+        /* ذيل النار والمؤشر المتحرك */
+        .fire-trail {
             position: absolute;
-            bottom: 0;
-            left: -5px;
-            width: 13px;
-            height: 13px;
-            background: #ffd700;
+            width: 12px;
+            height: 12px;
+            background: #AA7452;
             border-radius: 50%;
-            box-shadow: 0 0 12px #ffd700;
-        }
-
-        /* صندوق تسجيل الدخول (مخفي في البداية) */
-        .login-card {
-            background: rgba(20, 25, 35, 0.85);
-            border: 1px solid rgba(0, 255, 200, 0.2);
-            padding: 30px;
-            border-radius: 14px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.7), 0 0 20px rgba(0,255,150,0.1);
-            width: 330px;
-            text-align: center;
-            opacity: 0;
-            transform: translateY(30px);
             pointer-events: none;
-            transition: all 0.6s ease;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px #AA7452, 0 0 30px #7C5841, 0 0 45px #ff5722;
+            z-index: 9999;
+            transition: transform 0.05s ease-out;
         }
 
-        .login-card.show {
+        .trail-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, #AA7452 0%, #7C5841 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            animation: fadeOut 0.6s linear forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                transform: scale(1);
+                opacity: 0.9;
+            }
+            100% {
+                transform: scale(0.2);
+                opacity: 0;
+            }
+        }
+
+        /* الواجهة الأولى - السينمائية */
+        #introSection {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 40px;
+            transition: opacity 1s ease;
+        }
+
+        /* اللمبة والحبل */
+        .lamp-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .wire {
+            width: 3px;
+            height: 120px;
+            background: #969A9E;
+            transition: height 0.3s ease;
+        }
+
+        .bulb-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bulb {
+            width: 50px;
+            height: 60px;
+            background: #2D383E;
+            border: 2px solid #969A9E;
+            border-radius: 50% 50% 40% 40%;
+            position: relative;
+            transition: all 0.4s ease;
+        }
+
+        /* حالة اللمبة منورة بلون دافئ متناسق */
+        .bulb.on {
+            background: #AA7452;
+            border-color: #D4C9C7;
+            box-shadow: 0 0 40px #AA7452, 0 0 80px #7C5841, inset 0 0 15px #D4C9C7;
+        }
+
+        /* مخروط النور تحت اللمبة */
+        .light-beam {
+            position: absolute;
+            top: 180px;
+            width: 0px;
+            height: 0px;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-top: 0px solid rgba(170, 116, 82, 0);
+            transition: all 0.8s ease;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .light-beam.active {
+            border-top: 360px solid rgba(170, 116, 82, 0.15);
+            filter: drop-shadow(0 0 25px rgba(124, 88, 65, 0.3));
+        }
+
+        /* محتوى العرض تحت النور (الروبوت وخانة تسجيل الدخول) */
+        .stage-container {
+            position: absolute;
+            top: 250px;
+            display: flex;
+            gap: 50px;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+
+        .stage-container.show {
             opacity: 1;
             transform: translateY(0);
             pointer-events: auto;
         }
 
+        /* تصميم الروبوت بالوان الباليت */
+        .robot {
+            width: 120px;
+            height: 160px;
+            background: #2D383E;
+            border: 2px solid #AA7452;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 15px;
+            position: relative;
+            box-shadow: 0 0 20px rgba(170, 116, 82, 0.3);
+            transition: transform 0.4s ease;
+        }
+
+        .robot-head {
+            width: 70px;
+            height: 50px;
+            background: #051822;
+            border: 2px solid #7C5841;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        .robot-eye {
+            width: 12px;
+            height: 12px;
+            background: #AA7452;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #AA7452;
+            transition: transform 0.3s ease;
+        }
+
+        .robot-body {
+            width: 90px;
+            height: 70px;
+            background: #051822;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #2D383E;
+        }
+
+        .robot-core {
+            width: 25px;
+            height: 25px;
+            background: #7C5841;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #7C5841;
+        }
+
+        /* صندوق تسجيل الدخول (ديناميكي) */
+        .login-card {
+            background: rgba(45, 56, 62, 0.85);
+            border: 1px solid #7C5841;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(124, 88, 65, 0.3);
+            width: 320px;
+            transform: translateX(100px);
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s;
+        }
+
+        .stage-container.show .login-card {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
         .login-card h2 {
+            color: #AA7452;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 22px;
+        }
+
+        .input-group {
             margin-bottom: 15px;
-            color: #00ffc8;
         }
 
-        .login-card input {
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #969A9E;
+            font-size: 14px;
+        }
+
+        .input-group input {
             width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background: #0b0f19;
-            border: 1px solid #333;
+            padding: 10px;
+            background: #051822;
+            border: 1px solid #2D383E;
             border-radius: 6px;
-            color: #fff;
+            color: #D4C9C7;
             outline: none;
+            transition: border-color 0.3s;
         }
 
-        .login-card input:focus {
-            border-color: #00ffc8;
+        .input-group input:focus {
+            border-color: #AA7452;
+            box-shadow: 0 0 8px rgba(170, 116, 82, 0.4);
         }
 
-        .login-card button {
+        .sign-in-btn {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(135deg, #00ffc8, #0077ff);
+            background: linear-gradient(135deg, #AA7452, #7C5841);
             border: none;
             border-radius: 6px;
-            color: #0b0f19;
+            color: #D4C9C7;
             font-weight: bold;
+            font-size: 16px;
             cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
             margin-top: 10px;
-            transition: opacity 0.3s;
         }
 
-        .login-card button:hover {
-            opacity: 0.9;
+        .sign-in-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(170, 116, 82, 0.6);
         }
 
         .error-msg {
-            color: #ff4d4d;
+            color: #ff5722;
             font-size: 13px;
+            text-align: center;
             margin-top: 10px;
             display: none;
         }
 
-        /* --- واجهة المعرض والمنتجات (مخفية حتى يتم تسجيل الدخول) --- */
-        .main-store {
+        /* واجهة المتجر الداخلية (بعد الدخول الناجح) */
+        #mainStore {
             display: none;
-            padding: 60px 20px;
-            max-width: 1100px;
+            width: 100%;
+            min-height: 100vh;
+            padding: 40px;
+            background: #051822;
+        }
+
+        #mainStore h1 {
+            color: #AA7452;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(170, 116, 82, 0.4);
+        }
+
+.store-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        .store-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .store-header h1 {
-            color: #00ffc8;
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
         .product-card {
-            background: #141a26;
-            border: 1px solid #222;
-            padding: 25px 15px;
+            background: #2D383E;
+            border: 1px solid #7C5841;
             border-radius: 10px;
+            padding: 20px;
             text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            transition: transform 0.3s, border-color 0.3s;
         }
 
         .product-card:hover {
-            transform: translateY(-8px);
-            border-color: #00ffc8;
-            box-shadow: 0 10px 25px rgba(0,255,200,0.15);
-            background: #182030;
+            transform: translateY(-5px);
+            border-color: #AA7452;
         }
 
         .product-card h3 {
-            color: #fff;
-            font-size: 18px;
-            margin-bottom: 8px;
+            color: #D4C9C7;
+            margin-bottom: 10px;
         }
 
         .product-card p {
-            color: #888;
-            font-size: 14px;
+            color: #AA7452;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <!-- تأثير حركة الماوس والدخان -->
-    <div class="cursor-trail" id="cursorTrail"></div>
+    <!-- ذيل حبل النار للمؤشر -->
+    <div class="fire-trail" id="fireTrail"></div>
 
-    <!-- الواجهة الأولى: اللمبة وصندوق تسجيل الدخول -->
-    <section class="intro-section" id="introSection">
-        <div class="lamp-container" onclick="turnOnSystem()">
-            <div class="lamp-icon">💡</div>
-            <div class="pull-string"></div>
-            <p style="margin-top: 10px; font-size: 13px; color: #aaa;">اضغط على اللمبة للبدء</p>
+    <!-- الواجهة السينمائية الأولى -->
+    <div id="introSection">
+        <!-- اللمبة والحبل -->
+        <div class="lamp-container" id="lampContainer" onclick="toggleLight()">
+            <div class="wire" id="wireElement"></div>
+            <div class="bulb-wrapper">
+                <div class="bulb" id="bulbElement"></div>
+            </div>
         </div>
 
-        <div class="login-card" id="loginCard">
-            <h2>Welcome</h2>
-            <input type="text" id="username" placeholder="Username (hany)">
-            <input type="password" id="password" placeholder="Password (1-9)">
-            <button onclick="handleLogin()">Sign In</button>
-            <div class="error-msg" id="errorMsg">البيانات غير صحيحة! استخدم hany و 123456789</div>
-        </div>
-    </section>
+        <!-- مخروط الضوء -->
+        <div class="light-beam" id="lightBeam"></div>
 
-    <!-- واجهة المعرض والمنتجات (10 عناصر) -->
-    <section class="main-store" id="mainStore">
-        <div class="store-header">
-            <h1>معرض التصميمات والمنتجات السينمائية</h1>
-            <p>أهلاً بك يا فنان في لوحة التحكم الخاصة بك</p>
-        </div>
+        <!-- المسرح (الروبوت وخانة تسجيل الدخول) -->
+        <div class="stage-container" id="stageContainer">
+            <!-- الروبوت -->
+            <div class="robot" id="robotElement">
+                <div class="robot-head">
+                    <div class="robot-eye" id="leftEye"></div>
+                    <div class="robot-eye" id="rightEye"></div>
+                </div>
+                <div class="robot-body">
+                    <div class="robot-core"></div>
+                </div>
+            </div>
 
-        <div class="products-grid">
-            <div class="product-card"><h3>منتج 01</h3><p>تصميم تفاعلي فائق</p></div>
-            <div class="product-card"><h3>منتج 02</h3><p>واجهة سينمائية</p></div>
-            <div class="product-card"><h3>منتج 03</h3><p>أداء عالي السرعة</p></div>
-            <div class="product-card"><h3>منتج 04</h3><p>تأثيرات بصرية مميزة</p></div>
-            <div class="product-card"><h3>منتج 05</h3><p>دعم الأجهزة الضعيفة</p></div>
-            <div class="product-card"><h3>منتج 06</h3><p>ألوان متناسقة داكنة</p></div>
-            <div class="product-card"><h3>منتج 07</h3><p>تجربة مستخدم سلسة</p></div>
-            <div class="product-card"><h3>منتج 08</h3><p>حماية وتحقق ذكي</p></div>
-            <div class="product-card"><h3>منتج 09</h3><p>قالب جاهز ومعدل</p></div>
-            <div class="product-card"><h3>منتج 10</h3><p>إدارة متكاملة للمحتوى</p></div>
+            <!-- خانة تسجيل الدخول -->
+            <div class="login-card">
+                <h2>تسجيل الدخول</h2>
+                <div class="input-group">
+                    <label>اسم المستخدم (Username)</label>
+                    <input type="text" id="username" placeholder="اكتب hany">
+                </div>
+                <div class="input-group">
+                    <label>كلمة المرور (Password)</label>
+                    <input type="password" id="password" placeholder="اكتب 12345678900">
+                </div>
+                <button class="sign-in-btn" onclick="handleLogin()">Sign In</button>
+                <div class="error-msg" id="errorMsg">البيانات غير صحيحة، حاول مجدداً!</div>
+            </div>
         </div>
-    </section>
+    </div>
+
+    <!-- واجهة المتجر الداخلية -->
+    <div id="mainStore">
+        <h1>أهلاً بك يا فنان في الواجهة الرئيسية!</h1>
+        <div class="store-grid" id="productsGrid">
+            <!-- سيتم توليد المنتجات هنا جافاسكريبت -->
+        </div>
+    </div>
 
     <script>
-        // تأثير حركة الماوس (الدخان التفاعلي)
-        const trail = document.getElementById('cursorTrail');
+        // حركة ذيل حبل النار للمؤشر (يعمل أثناء الحركة والوقوف)
+        const trail = document.getElementById('fireTrail');
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let currentX = mouseX;
+        let currentY = mouseY;
+
         window.addEventListener('mousemove', (e) => {
-            trail.style.left = e.pageX + 'px';
-            trail.style.top = e.pageY + 'px';
+            mouseX = e.pageX;
+            mouseY = e.pageY;
+            
+            // إضافة جسيمات نارية صغيرة تسير خلف المؤشر
+            createParticle(e.pageX, e.pageY);
         });
 
-        // تشغيل نظام اللمبة وإظهار خانة تسجيل الدخول
-        function turnOnSystem() {
-            document.body.classList.add('cinematic-glow');
-            document.getElementById('loginCard').classList.add('show');
+        function createParticle(x, y) {
+            const particle = document.createElement('div');
+            particle.classList.add('trail-particle');
+            particle.style.left = x + 'px';
+            particle.style.top = y + 'px';
+            document.body.appendChild(particle);
+
+            setTimeout(() => {
+                particle.remove();
+            }, 600);
         }
 
-        // التحقق من بيانات تسجيل الدخول بالـ JavaScript
+        // حلقة التنعيم لحركة حبل النار
+        function animateTrail() {
+            currentX += (mouseX - currentX) * 0.15;
+            currentY += (mouseY - currentY) * 0.15;
+            trail.style.left = currentX + 'px';
+            trail.style.top = currentY + 'px';
+            requestAnimationFrame(animateTrail);
+        }
+        animateTrail();
+
+        let isLightOn = false;
+
+        // دالة تشغيل وإطفاء اللمبة بشد الحبل
+        function toggleLight() {
+            isLightOn = !isLightOn;
+            const bulb = document.getElementById('bulbElement');
+            const beam = document.getElementById('lightBeam');
+            const stage = document.getElementById('stageContainer');
+            const wire = document.getElementById('wireElement');
+            const leftEye = document.getElementById('leftEye');
+            const rightEye = document.getElementById('rightEye');
+
+            // تأثير شد الحبل البسيط
+            wire.style.height = isLightOn ? '140px' : '120px';
+            setTimeout(() => {
+                wire.style.height = '120px';
+            }, 200);
+
+            if (isLightOn) {
+                bulb.classList.add('on');
+                beam.classList.add('active');
+                
+                // إظهار الروبوت وخانة الدخول بحركة سينمائية تدريجية
+                setTimeout(() => {
+                    stage.classList.add('show');
+                    // الروبوت ينظر يميناً ناحية خانة تسجيل الدخول
+                    setTimeout(() => {
+                        leftEye.style.transform = 'translateX(3px)';
+                        rightEye.style.transform = 'translateX(3px)';
+                    }, 500);
+                }, 400);
+
+            } else {
+                bulb.classList.remove('on');
+                beam.classList.remove('active');
+                stage.classList.remove('show');
+                // إرجاع عيون الروبوت للوضع الطبيعي
+                leftEye.style.transform = 'translateX(0)';
+                rightEye.style.transform = 'translateX(0)';
+            }
+        }
+
+        // دالة التحقق من بيانات الدخول
         function handleLogin() {
             const user = document.getElementById('username').value.trim();
             const pass = document.getElementById('password').value.trim();
             const errorMsg = document.getElementById('errorMsg');
 
-            // اليوزر hany والباسورد 123456789
-            if (user === 'hany' && pass === '123456789') {
+            if (user === 'hany' && pass === '12345678900') {
                 document.getElementById('introSection').style.display = 'none';
-                document.getElementById('mainStore').style.display = 'block';
+                const store = document.getElementById('mainStore');
+                store.style.display = 'block';
+
+                // توليد المنتجات التجريبية الداخلية
+                const grid = document.getElementById('productsGrid');
+                grid.innerHTML = '';
+                for (let i = 1; i <= 10; i++) {
+                    grid.innerHTML += `
+                        <div class="product-card">
+                            <h3>منتج رقم ${i}</h3>
+                            <p>$${i * 18}.00</p>
+                        </div>
+                    `;
+                }
             } else {
                 errorMsg.style.display = 'block';
             }
