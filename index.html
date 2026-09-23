@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hany - واجهة سينمائية تفاعلية</title>
+    <title>Hany Cinematic Store</title>
     <style>
         * {
             margin: 0;
@@ -13,114 +13,131 @@
         }
 
         body {
-            background-color: #121214;
+            background-color: #0b0f19;
             color: #ffffff;
-            transition: background-color 0.8s ease;
             overflow-x: hidden;
+            position: relative;
+            height: 100vh;
         }
 
-        /* --- واجهة اللمبة السينمائية --- */
-        .lamp-section {
+        /* تأثير أثر الماوس (الدخان السينمائي) */
+        .cursor-trail {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, rgba(0,255,200,0.6) 0%, rgba(0,120,255,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s;
+            z-index: 9999;
+            filter: blur(4px);
+        }
+
+        /* --- واجهة اللمبة وتسجيل الدخول السينمائية --- */
+        .intro-section {
             height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             position: relative;
-            border-bottom: 2px solid #2a2a2e;
+            transition: background 1s ease;
+        }
+
+        /* الوضع السينمائي بعد تشغيل اللمبة */
+        body.cinematic-glow .intro-section {
+            background: radial-gradient(circle at center, #0f2b3d 0%, #060913 80%);
+            box-shadow: inset 0 0 100px rgba(0, 255, 150, 0.05);
         }
 
         .lamp-container {
-            position: relative;
             cursor: pointer;
             text-align: center;
-            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .lamp-container:hover {
+            transform: scale(1.05);
         }
 
         .lamp-icon {
-            font-size: 80px;
-            transition: transform 0.3s ease;
-        }
-
-        .lamp-container:hover .lamp-icon {
-            transform: translateY(10px);
+            font-size: 70px;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4));
         }
 
         .pull-string {
-            width: 4px;
-            height: 60px;
+            width: 3px;
+            height: 50px;
             background: #d4af37;
             margin: 0 auto;
             position: relative;
-            cursor: ns-resize;
         }
 
         .pull-string::after {
             content: '';
             position: absolute;
             bottom: 0;
-            left: -6px;
-            width: 16px;
-            height: 16px;
+            left: -5px;
+            width: 13px;
+            height: 13px;
             background: #ffd700;
             border-radius: 50%;
-            box-shadow: 0 0 10px #ffd700;
+            box-shadow: 0 0 12px #ffd700;
         }
 
-        /* حالة إضاءة اللمبة */
-        body.light-on {
-            background-color: #f0f2f5;
-            color: #121214;
-        }
-
-        body.light-on .login-card {
-            background: #ffffff;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        }
-
-        body.light-on .login-card input {
-            background: #f8f9fa;
-            color: #333;
-            border: 1px solid #ddd;
-        }
-
-        /* صندوق تسجيل الدخول السينمائي */
+        /* صندوق تسجيل الدخول (مخفي في البداية) */
         .login-card {
-            background: #1e1e24;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            width: 350px;
+            background: rgba(20, 25, 35, 0.85);
+            border: 1px solid rgba(0, 255, 200, 0.2);
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.7), 0 0 20px rgba(0,255,150,0.1);
+            width: 330px;
             text-align: center;
-            transition: all 0.5s ease;
+            opacity: 0;
+            transform: translateY(30px);
+            pointer-events: none;
+            transition: all 0.6s ease;
+        }
+
+        .login-card.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
         }
 
         .login-card h2 {
-            margin-bottom: 20px;
-            color: #d4af37;
+            margin-bottom: 15px;
+            color: #00ffc8;
         }
 
         .login-card input {
             width: 100%;
             padding: 12px;
             margin: 10px 0;
-            background: #2a2a32;
-            border: 1px solid #444;
-            border-radius: 8px;
+            background: #0b0f19;
+            border: 1px solid #333;
+            border-radius: 6px;
             color: #fff;
             outline: none;
+        }
+
+        .login-card input:focus {
+            border-color: #00ffc8;
         }
 
         .login-card button {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(135deg, #d4af37, #aa8c2c);
+            background: linear-gradient(135deg, #00ffc8, #0077ff);
             border: none;
-            border-radius: 8px;
-            color: #fff;
+            border-radius: 6px;
+            color: #0b0f19;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 10px;
             transition: opacity 0.3s;
         }
 
@@ -128,125 +145,138 @@
             opacity: 0.9;
         }
 
-        .switch-btn {
-            margin-top: 20px;
-            background: transparent;
-            border: 2px solid #d4af37;
-            color: #d4af37;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
+        .error-msg {
+            color: #ff4d4d;
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
         }
 
-        .switch-btn:hover {
-            background: #d4af37;
-            color: #121214;
-        }
-
-        /* --- واجهة البورتفوليو والظهور التدريجي (Scroll Reveal) --- */
-        .portfolio-section {
-            padding: 100px 20px;
-            min-height: 100vh;
-            max-width: 900px;
+        /* --- واجهة المعرض والمنتجات (مخفية حتى يتم تسجيل الدخول) --- */
+        .main-store {
+            display: none;
+            padding: 60px 20px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
-        .reveal-item {
-            opacity: 0;
-            transform: translateY(50px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
-            margin-bottom: 50px;
-            background: #1a1a20;
-            padding: 30px;
-            border-radius: 12px;
-            border-right: 4px solid #d4af37;
+        .store-header {
+            text-align: center;
+            margin-bottom: 40px;
         }
 
-        .reveal-item.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .reveal-item h3 {
-            color: #d4af37;
+        .store-header h1 {
+            color: #00ffc8;
+            font-size: 32px;
             margin-bottom: 10px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: #141a26;
+            border: 1px solid #222;
+            padding: 25px 15px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            border-color: #00ffc8;
+            box-shadow: 0 10px 25px rgba(0,255,200,0.15);
+            background: #182030;
+        }
+
+        .product-card h3 {
+            color: #fff;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .product-card p {
+            color: #888;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
 
-    <!-- الواجهة الأولى: اللمبة والتفاعل السينمائي -->
-    <section class="lamp-section" id="lampSection">
-        <div class="lamp-container" onclick="toggleLight()">
-            <div class="lamp-icon" id="lampIcon">💡</div>
+    <!-- تأثير حركة الماوس والدخان -->
+    <div class="cursor-trail" id="cursorTrail"></div>
+
+    <!-- الواجهة الأولى: اللمبة وصندوق تسجيل الدخول -->
+    <section class="intro-section" id="introSection">
+        <div class="lamp-container" onclick="turnOnSystem()">
+            <div class="lamp-icon">💡</div>
             <div class="pull-string"></div>
-            <p style="margin-top: 10px; font-size: 14px; color: #d4af37;">اضغط أو اسحب لتشغيل الإضاءة</p>
+            <p style="margin-top: 10px; font-size: 13px; color: #aaa;">اضغط على اللمبة للبدء</p>
         </div>
 
-        <div class="login-card">
+        <div class="login-card" id="loginCard">
             <h2>Welcome</h2>
-            <input type="text" placeholder="Username">
-            <input type="password" placeholder="Password">
-            <button>Sign In</button>
-        </div>
-
-        <button class="switch-btn" onclick="scrollToPortfolio()">انتقل للواجهة السينمائية التانية 👇</button>
-    </section>
-
-    <!-- الواجهة الثانية: عناصر تظهر تدريجياً مع الاسكرول -->
-    <section class="portfolio-section" id="portfolioSection">
-        <h2 style="text-align: center; margin-bottom: 50px; color: #d4af37;">معرض أعمالي والتصميمات السينمائية</h2>
-        
-        <div class="reveal-item">
-            <h3>01. التصميم التفاعلي (Interactive UI)</h3>
-            <p>هنا يتم عرض تفاصيل المهارات والخدمات بطريقة انسيابية ومريحة للعين تظهر تدريجياً مع حركة التمرير.</p>
-        </div>
-
-        <div class="reveal-item">
-            <h3>02. هندسة الواجهات الأمامية (Frontend Architecture)</h3>
-            <p>بناء مواقع سريعة وخفيفة ومتوافقة مع جميع الأجهزة بدون الحاجة لقواعد بيانات معقدة.</p>
-        </div>
-
-        <div class="reveal-item">
-            <h3>03. أنظمة العرض والتضمين (Smart Embeds)</h3>
-            <p>إدارة الفيديوهات والمحتويات المرئية بأعلى كفاءة وأداء متميز لضمان سرعة التحميل.</p>
+            <input type="text" id="username" placeholder="Username (hany)">
+            <input type="password" id="password" placeholder="Password (1-9)">
+            <button onclick="handleLogin()">Sign In</button>
+            <div class="error-msg" id="errorMsg">البيانات غير صحيحة! استخدم hany و 123456789</div>
         </div>
     </section>
 
-    <!-- الجافاسكريبت للتحكم والتشغيل التفاعلي -->
+    <!-- واجهة المعرض والمنتجات (10 عناصر) -->
+    <section class="main-store" id="mainStore">
+        <div class="store-header">
+            <h1>معرض التصميمات والمنتجات السينمائية</h1>
+            <p>أهلاً بك يا فنان في لوحة التحكم الخاصة بك</p>
+        </div>
+
+        <div class="products-grid">
+            <div class="product-card"><h3>منتج 01</h3><p>تصميم تفاعلي فائق</p></div>
+            <div class="product-card"><h3>منتج 02</h3><p>واجهة سينمائية</p></div>
+            <div class="product-card"><h3>منتج 03</h3><p>أداء عالي السرعة</p></div>
+            <div class="product-card"><h3>منتج 04</h3><p>تأثيرات بصرية مميزة</p></div>
+            <div class="product-card"><h3>منتج 05</h3><p>دعم الأجهزة الضعيفة</p></div>
+            <div class="product-card"><h3>منتج 06</h3><p>ألوان متناسقة داكنة</p></div>
+            <div class="product-card"><h3>منتج 07</h3><p>تجربة مستخدم سلسة</p></div>
+            <div class="product-card"><h3>منتج 08</h3><p>حماية وتحقق ذكي</p></div>
+            <div class="product-card"><h3>منتج 09</h3><p>قالب جاهز ومعدل</p></div>
+            <div class="product-card"><h3>منتج 10</h3><p>إدارة متكاملة للمحتوى</p></div>
+        </div>
+    </section>
+
     <script>
-        // وظيفة تشغيل وإطفاء اللمبة والوضع السينمائي
-        function toggleLight() {
-            document.body.classList.toggle('light-on');
-            const lampIcon = document.getElementById('lampIcon');
-            if (document.body.classList.contains('light-on')) {
-                lampIcon.textContent = '☀️';
+        // تأثير حركة الماوس (الدخان التفاعلي)
+        const trail = document.getElementById('cursorTrail');
+        window.addEventListener('mousemove', (e) => {
+            trail.style.left = e.pageX + 'px';
+            trail.style.top = e.pageY + 'px';
+        });
+
+        // تشغيل نظام اللمبة وإظهار خانة تسجيل الدخول
+        function turnOnSystem() {
+            document.body.classList.add('cinematic-glow');
+            document.getElementById('loginCard').classList.add('show');
+        }
+
+        // التحقق من بيانات تسجيل الدخول بالـ JavaScript
+        function handleLogin() {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            const errorMsg = document.getElementById('errorMsg');
+
+            // اليوزر hany والباسورد 123456789
+            if (user === 'hany' && pass === '123456789') {
+                document.getElementById('introSection').style.display = 'none';
+                document.getElementById('mainStore').style.display = 'block';
             } else {
-                lampIcon.textContent = '💡';
+                errorMsg.style.display = 'block';
             }
         }
-
-        // الانتقال السلس للواجهة الثانية
-        function scrollToPortfolio() {
-            document.getElementById('portfolioSection').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // مراقبة حركة الاسكرول لإظهار العناصر تدريجياً (Scroll Reveal)
-        window.addEventListener('scroll', function() {
-            const reveals = document.querySelectorAll('.reveal-item');
-            
-            reveals.forEach(element => {
-                const windowHeight = window.innerHeight;
-                const elementTop = element.getBoundingClientRect().top;
-                const elementVisible = 150;
-
-                if (elementTop < windowHeight - elementVisible) {
-                    element.classList.add('active');
-                }
-            });
-        });
     </script>
 </body>
 </html>
