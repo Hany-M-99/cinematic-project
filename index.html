@@ -3,448 +3,643 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة الطيور الساحرة - تسجيل الدخول والمعرض السينمائي</title>
+    <title>FastFeast - قائمة الـ 170 وجبة الفضائية</title>
     <style>
+        :root {
+            --bg-deep: #0c0c0c;
+            --bg-card: #141414;
+            --primary-color: #f39c12;
+            --text-color: #ffffff;
+            --text-muted: #b2b2b2;
+            --accent-glow: rgba(243, 156, 18, 0.4);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            scroll-behavior: smooth;
         }
 
         body {
-            background-color: #032820;
-            color: #C5C764;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
+            background-color: var(--bg-deep);
+            color: var(--text-color);
+            min-height: 100vh;
+            overflow-x: hidden;
             position: relative;
         }
 
-        /* ذيل النار والمؤشر المضيء */
-        .fire-trail {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            background: #80A416;
-            border-radius: 50%;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 15px #80A416, 0 0 30px #08652C, 0 0 45px #C5C764;
-            z-index: 9999;
-        }
-
-        .trail-particle {
-            position: absolute;
-            width: 7px;
-            height: 7px;
-            background: radial-gradient(circle, #80A416 0%, #08652C 100%);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9998;
-            animation: fadeOutParticle 0.6s linear forwards;
-        }
-
-        @keyframes fadeOutParticle {
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(0.2); opacity: 0; }
-        }
-
-        /* شاشات النظام (التحكم في التبديل بين تسجيل الدخول والمعرض) */
-        .screen {
-            position: absolute;
+        /* خلفية الفضاء المتحركة */
+        #spaceCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #0c0c0c 100%);
+        }
+
+        /* شريط التنقل العلوي */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-        }
-
-        .hidden {
-            opacity: 0;
-            pointer-events: none;
-            transform: scale(0.95);
-        }
-
-        .active-screen {
-            opacity: 1;
-            pointer-events: auto;
-            transform: scale(1);
-        }
-
-        /* --- تصميم صفحة تسجيل الدخول المفصلة --- */
-        .login-card {
-            width: 420px;
-            background: rgba(3, 40, 32, 0.85);
-            border: 2px solid rgba(128, 164, 22, 0.4);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(128, 164, 22, 0.2);
+            padding: 20px 60px;
+            background: rgba(12, 12, 12, 0.95);
             backdrop-filter: blur(10px);
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
         }
 
-        .login-header {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .login-header h2 {
-            color: #80A416;
-            font-size: 28px;
+        .logo {
+            font-size: 24px;
             font-weight: bold;
-            text-shadow: 0 0 10px rgba(128, 164, 22, 0.4);
-        }
-
-        .login-header p {
-            color: #C5C764;
-            font-size: 13px;
-            opacity: 0.8;
-            margin-top: 5px;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .input-group label {
-            font-size: 14px;
-            color: #80A416;
-            font-weight: 600;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px 15px;
-            background: rgba(8, 101, 44, 0.15);
-            border: 1px solid rgba(128, 164, 22, 0.3);
-            border-radius: 8px;
-            color: #C5C764;
-            font-size: 15px;
-            outline: none;
-            transition: all 0.3s;
-        }
-
-        .input-group input:focus {
-            border-color: #80A416;
-            box-shadow: 0 0 10px rgba(128, 164, 22, 0.5);
-            background: rgba(8, 101, 44, 0.3);
-        }
-
-        .login-btn {
-            margin-top: 10px;
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #80A416, #08652C);
-            border: none;
-            border-radius: 8px;
-            color: #032820;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 0 0 15px rgba(128, 164, 22, 0.4);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 25px rgba(128, 164, 22, 0.8);
-        }
-
-        /* --- تصميم معرض الصور السينمائي بعد تسجيل الدخول --- */
-        .gallery-card {
-            position: relative;
-            width: 950px;
-            height: 520px;
-            background-size: cover;
-            background-position: center;
-            border-radius: 20px;
-            box-shadow: 0 30px 60px rgba(3, 40, 32, 0.95), 0 0 0 2px rgba(128, 164, 22, 0.5);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 40px;
-            transition: background-image 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .gallery-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg, rgba(3, 40, 32, 0.92) 0%, rgba(3, 40, 32, 0.65) 55%, rgba(3, 40, 32, 0.25) 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 40px;
-            z-index: 1;
-        }
-
-        .info-section {
-            max-width: 420px;
-            z-index: 2;
-            animation: fadeInTextContent 0.6s ease;
-        }
-
-        @keyframes fadeInTextContent {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .info-section h1 {
-            color: #80A416;
-            font-size: 38px;
-            font-weight: 800;
-            margin-bottom: 15px;
-            text-shadow: 0 0 15px rgba(128, 164, 22, 0.6);
+            font-style: italic;
+            color: var(--text-color);
             letter-spacing: 1px;
         }
 
-        .info-section p {
-            color: #C5C764;
-            font-size: 15px;
-            line-height: 1.7;
-            margin-bottom: 25px;
-            opacity: 0.95;
-        }
-
-        .action-btn {
-            background: linear-gradient(135deg, #80A416, #08652C);
-            border: none;
-            padding: 12px 28px;
-            color: #032820;
-            font-weight: bold;
-            font-size: 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 0 15px rgba(128, 164, 22, 0.4);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .action-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(128, 164, 22, 0.8);
-        }
-
-        .thumbnails-bar {
+        nav ul {
             display: flex;
+            gap: 35px;
+            list-style: none;
+        }
+
+        nav ul li a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            color: var(--primary-color);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .cart-icon-wrapper {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .cart-counter {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: var(--primary-color);
+            color: #000;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 50%;
+        }
+
+        .order-online-btn {
+            background-color: var(--primary-color);
+            color: #000;
+            padding: 10px 22px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 13px;
+            text-transform: uppercase;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .order-online-btn:hover {
+            transform: scale(1.05);
+            background-color: #e67e22;
+        }
+
+        /* البانر الرئيسي */
+        .hero-container {
+            max-width: 1200px;
+            margin: 160px auto 60px auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .hero-text {
+            max-width: 550px;
+        }
+
+        .hero-text h1 {
+            font-size: 52px;
+            font-weight: 300;
+            font-style: italic;
+            color: var(--text-color);
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero-text p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+        .hero-btn {
+            background-color: var(--primary-color);
+            color: #000;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .hero-btn:hover {
+            background-color: #e67e22;
+        }
+
+        .hero-image img {
+            max-width: 450px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        /* قسم القائمة الكبرى (170 وجبة) */
+        .menu-section {
+            max-width: 1200px;
+            margin: 0 auto 80px auto;
+            padding: 0 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+            flex-wrap: wrap;
             gap: 15px;
-            z-index: 2;
-            justify-content: flex-end;
+        }
+
+        .section-title {
+            font-size: 28px;
+            color: var(--primary-color);
+        }
+
+        .search-box {
+            padding: 8px 15px;
+            background: #181818;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            color: #fff;
+            font-size: 14px;
+            width: 250px;
+            outline: none;
+        }
+
+        .search-box:focus {
+            border-color: var(--primary-color);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+        }
+
+        .food-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .food-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary-color);
+        }
+
+        .food-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .food-content {
+            padding: 18px;
+        }
+
+        .food-content h3 {
+            font-size: 17px;
+            color: var(--text-color);
+            margin-bottom: 6px;
+        }
+
+        .food-content p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            line-height: 1.4;
+            height: 35px;
+            overflow: hidden;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
         }
 
-        .thumb-item {
-            width: 80px;
-            height: 105px;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 2px solid rgba(128, 164, 22, 0.4);
+        .price {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .add-btn {
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 6px 14px;
+            border-radius: 20px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            background: #032820;
+            font-size: 12px;
+            font-weight: bold;
+            transition: 0.2s;
         }
 
-        .thumb-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s;
+        .add-btn:hover {
+            background: var(--primary-color);
+            color: #000;
         }
 
-        .thumb-item:hover, .thumb-item.active {
-            border-color: #80A416;
-            transform: translateY(-8px);
-            box-shadow: 0 10px 25px rgba(128, 164, 22, 0.7);
+        /* نافذة السلة وتأكيد الأوردر */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
         }
 
-        .logout-link {
-            position: absolute;
-            top: 25px;
-            left: 30px;
-            color: #C5C764;
-            font-size: 13px;
-            cursor: pointer;
-            text-decoration: underline;
-            z-index: 10;
-            opacity: 0.8;
-            transition: opacity 0.2s;
-        }
-
-        .logout-link:hover {
+        .modal-overlay.active {
             opacity: 1;
-            color: #80A416;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: #181818;
+            border: 2px solid var(--primary-color);
+            border-radius: 20px;
+            padding: 30px;
+            width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 0 40px var(--accent-glow);
+        }
+
+        .modal-card h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 22px;
+            text-align: center;
+        }
+
+        .cart-items-box {
+            max-height: 220px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .cart-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #111;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .cart-row img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .cart-info {
+            flex-grow: 1;
+        }
+
+        .cart-info h4 {
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .cart-info p {
+            font-size: 12px;
+            color: var(--primary-color);
+        }
+
+        .total-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .checkout-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checkout-form input, .checkout-form textarea {
+            width: 100%;
+            padding: 11px;
+            background: #111;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .checkout-form input:focus, .checkout-form textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .form-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-send {
+            flex: 1;
+            background-color: var(--primary-color);
+            border: none;
+            padding: 12px;
+            color: #000;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .btn-close {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 18px;
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: #080808;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            font-size: 13px;
         }
     </style>
 </head>
 <body>
 
-    <!-- مؤشر النار الذكي -->
-    <div class="fire-trail" id="fireTrail"></div>
+    <canvas id="spaceCanvas"></canvas>
 
-    <!-- شاشة تسجيل الدخول -->
-    <div class="screen active-screen" id="loginScreen">
-        <div class="login-card">
-            <div class="login-header">
-                <h2>تسجيل الدخول</h2>
-                <p>أدخل بيانات حسابك للمتابعة إلى المعرض</p>
+    <header>
+        <div class="logo">FastFeast</div>
+        <nav>
+            <ul>
+                <li><a href="#" class="active">HOME</a></li>
+                <li><a href="#menuSection">OUR MENU</a></li>
+                <li><a href="#about">ABOUT US</a></li>
+                <li><a href="#reserve">RESERVE TABLE</a></li>
+            </ul>
+        </nav>
+        <div class="header-left">
+            <div class="header-icons">
+                <span>👤</span>
+                <div class="cart-icon-wrapper" onclick="openCartModal()">
+                    🛒
+                    <span class="cart-counter" id="cartCounter">0</span>
+                </div>
+                <span>🔍</span>
             </div>
-            <div class="input-group">
-                <label>اسم المستخدم أو البريد الإلكتروني</label>
-                <input type="text" id="usernameInput" placeholder="أدخل اسم المستخدم...">
-            </div>
-            <div class="input-group">
-                <label>كلمة المرور</label>
-                <input type="password" id="passwordInput" placeholder="••••••••">
-            </div>
-            <button class="login-btn" onclick="handleLogin()">دخول إلى المعرض</button>
+            <button class="order-online-btn" onclick="openCartModal()">Order Online</button>
+        </div>
+    </header>
+
+    <div class="hero-container">
+        <div class="hero-text">
+            <h1>Delicious Fast Food</h1>
+            <p>استمتع بتجربة فريدة مع تشكيلتنا الضخمة التي تضم 170 وجبة فاخرة من البرجر، البيتزا، المشويات، والحلويات المحضرة بعناية فائقة لترضي جميع الأذواق.</p>
+            <button class="hero-btn" onclick="document.getElementById('menuSection').scrollIntoView({behavior: 'smooth'})">Order Now</button>
+        </div>
+        <div class="hero-image">
+            <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800" alt="Burger & Fries">
         </div>
     </div>
 
-    <!-- شاشة المعرض السينمائي (تظهر بعد الدخول) -->
-    <div class="screen hidden" id="galleryScreen">
-        <span class="logout-link" onclick="handleLogout()">تسجيل الخروج</span>
-        <div class="gallery-card" id="galleryCard">
-            <div class="gallery-overlay">
+    <div class="menu-section" id="menuSection">
+        <div class="section-header">
+            <h2 class="section-title">Our Complete Menu (170 Items)</h2>
+            <input type="text" id="searchBox" class="search-box" placeholder="ابحث عن وجبتك المفضلة..." oninput="filterMenu()">
+        </div>
+        <div class="menu-grid" id="menuGrid">
+            <!-- سيتم توليد الـ 170 صنف تلقائياً هنا -->
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="cartModal">
+        <div class="modal-card">
+            <h2>سلة المشتريات والطلبات</h2>
+            <div class="cart-items-box" id="cartItemsBox"></div>
+            <div class="total-price" id="totalPrice">الإجمالي: 0 ج.م</div>
+
+            <div class="checkout-form">
+                <h3 style="color: var(--primary-color); font-size: 15px; margin-bottom: 2px;">بيانات الاستلام</h3>
+                <input type="text" id="custName" placeholder="الاسم الكامل">
+                <input type="text" id="custPhone" placeholder="رقم التليفون">
+                <input type="text" id="custAddress" placeholder="العنوان بالتفصيل (المكان والشارع)">
+                <textarea id="custNotes" placeholder="ملاحظات إضافية (اختياري)" rows="2"></textarea>
                 
-                <!-- معلومات العنصر على اليسار -->
-                <div class="info-section">
-                    <h1 id="birdTitle">عنصر رقم 1</h1>
-                    <p id="birdDesc">هذه معلومات تفصيلية عن العنصر الأول، تم اختيار الصورة بعناية لتناسب الألوان والتصميم الأخضر الساحر.</p>
-                    <button class="action-btn" onclick="alert('تمت الإضافة إلى السلة بنجاح!')">أضف إلى السلة</button>
+                <div class="form-btns">
+                    <button class="btn-send" onclick="sendOrderToWhatsApp()">إرسال الأوردر (واتساب)</button>
+                    <button class="btn-close" onclick="closeCartModal()">إغلاق</button>
                 </div>
-
-                <!-- شريط الكروت المصغرة في الأسفل -->
-                <div class="thumbnails-bar" id="thumbnailsBar">
-                    <!-- يتم توليدها ديناميكياً -->
-                </div>
-
             </div>
         </div>
     </div>
+
+    <footer>
+        FastFeast Online Restaurant © 2026 - All Rights Reserved
+    </footer>
 
     <script>
-        /* تحريك ذيل النار والمؤشر */
-        const trail = document.getElementById('fireTrail');
-        let mouseX = window.innerWidth / 2;
-        let mouseY = window.innerHeight / 2;
-        let currentX = mouseX;
-        let currentY = mouseY;
+        const canvas = document.getElementById('spaceCanvas');
+        const ctx = canvas.getContext('2d');
 
-        window.addEventListener('mousemove', (e) => {
-            mouseX = e.pageX;
-            mouseY = e.pageY;
-            createParticle(e.pageX, e.pageY);
-        });
-
-        function createParticle(x, y) {
-            const particle = document.createElement('div');
-            particle.classList.add('trail-particle');
-            particle.style.left = x + 'px';
-            particle.style.top = y + 'px';
-            document.body.appendChild(particle);
-            setTimeout(() => { particle.remove(); }, 600);
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
-        function animateTrail() {
-            currentX += (mouseX - currentX) * 0.2;
-            currentY += (mouseY - currentY) * 0.2;
-            trail.style.left = currentX + 'px';
-            trail.style.top = currentY + 'px';
-            requestAnimationFrame(animateTrail);
-        }
-        animateTrail();
-
-        /* بيانات العناصر والطيور للمعرض السينمائي */
-        const galleryData = [
-            {
-                title: "عنصر رقم 1",
-                desc: "هذه معلومات تفصيلية عن العنصر الأول، تم اختيار الصورة بعناية لتناسب الألوان والتصميم الأخضر الساحر.",
-                img: "https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?w=1000"
-            },
-            {
-                title: "عنصر رقم 2",
-                desc: "هذه معلومات تفصيلية عن العنصر الثاني، يعكس روعة الطبيعة وجمال الطيور النادرة بألوانها الزاهية.",
-                img: "https://images.unsplash.com/photo-1522858541146-5fded364b928?w=1000"
-            },
-            {
-                title: "عنصر رقم 3",
-                desc: "هذه معلومات تفصيلية عن العنصر الثالث، مصمم خصيصاً ليمنحك تجربة بصرية مذهلة وتفاعلية فريدة.",
-                img: "https://images.unsplash.com/photo-1555169062-013468b476cb?w=1000"
-            },
-            {
-                title: "عنصر رقم 4",
-                desc: "هذه معلومات تفصيلية عن العنصر الرابع، يعرض تناغماً فريداً بين خلفية الشاشة وتفاصيل النصوص الجانبية.",
-                img: "https://images.unsplash.com/photo-1544942507-94f7c126d409?w=1000"
-            }
-        ];
-
-        /* التحكم في التنقل بين صفحة الدخول والمعرض */
-        function handleLogin() {
-            const user = document.getElementById('usernameInput').value;
-            if(user.trim() === "") {
-                alert('الرجاء إدخال اسم المستخدم أولاً!');
-                return;
-            }
-            document.getElementById('loginScreen').classList.remove('active-screen');
-            document.getElementById('loginScreen').classList.add('hidden');
-            
-            setTimeout(() => {
-                document.getElementById('galleryScreen').classList.remove('hidden');
-                document.getElementById('galleryScreen').classList.add('active-screen');
-            }, 300);
-        }
-
-        function handleLogout() {
-            document.getElementById('galleryScreen').classList.remove('active-screen');
-            document.getElementById('galleryScreen').classList.add('hidden');
-            
-            setTimeout(() => {
-                document.getElementById('loginScreen').classList.remove('hidden');
-                document.getElementById('loginScreen').classList.add('active-screen');
-            }, 300);
-        }
-
-        /* إدارة عرض محتوى المعرض والصور المصغرة */
-        const galleryCard = document.getElementById('galleryCard');
-        const birdTitle = document.getElementById('birdTitle');
-        const birdDesc = document.getElementById('birdDesc');
-        const thumbnailsBar = document.getElementById('thumbnailsBar');
-
-        function selectGalleryItem(index) {
-            galleryCard.style.backgroundImage = url('${galleryData[index].img}');
-            birdTitle.innerText = galleryData[index].title;
-            birdDesc.innerText = galleryData[index].desc;
-
-            const thumbs = document.querySelectorAll('.thumb-item');
-            thumbs.forEach((th, idx) => {
-                if (idx === index) {
-                    th.classList.add('active');
-                } else {
-                    th.classList.remove('active');
-                }
+        const stars = [];
+        for (let i = 0; i < 150; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 1.5,
+                speed: Math.random() * 0.4 + 0.1,
+                alpha: Math.random()
             });
         }
 
-        function initGalleryContent() {
-            thumbnailsBar.innerHTML = '';
-            galleryData.forEach((item, index) => {
-                thumbnailsBar.innerHTML += `
-                    <div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="selectGalleryItem(${index})">
-                        <img src="${item.img}" alt="${item.title}">
+        function animateSpace() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#ffffff';
+            stars.forEach(star => {
+                ctx.globalAlpha = star.alpha;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fill();
+                star.y -= star.speed;
+                if (star.y < 0) {
+                    star.y = canvas.height;
+                    star.x = Math.random() * canvas.width;
+                }
+                star.alpha += (Math.random() - 0.5) * 0.04;
+                if (star.alpha < 0.2) star.alpha = 0.2;
+                if (star.alpha > 0.9) star.alpha = 0.9;
+            });
+            requestAnimationFrame(animateSpace);
+        }
+        animateSpace();
+
+        /* توليد 170 وجبة بتنوع كامل وأسعار وصور دقيقة */
+        const baseCategories = [
+            { name: "برجر كلاسيكي وفضاء", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800", basePrice: 150 },
+            { name: "بيتزا إيطالية ونيازك", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800", basePrice: 190 },
+            { name: "مكرونة وباستا سريعة", img: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=800", basePrice: 130 },
+            { name: "سلطات ومقبلات طازجة", img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800", basePrice: 85 },
+            { name: "مشويات ودجاج مقرمش", img: "https://images.unsplash.com/photo-1626559597141-2ec643e2d537?w=800", basePrice: 170 },
+            { name: "حلويات ومشروبات باردة", img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=800", basePrice: 75 }
+        ];
+
+        let menuItems = [];
+        for (let i = 1; i <= 170; i++) {
+            let cat = baseCategories[(i - 1) % baseCategories.length];
+            let priceInc = ((i * 7) % 120);
+            menuItems.push({
+                id: i,
+                name: وجبة ${cat.name.split(' ')[0]} الفاخرة #${i},
+                desc: وصف تحضيري مميز للصنف رقم ${i} مكون من أجود المكونات الطازجة والتوابل الخاصة.,
+                price: cat.basePrice + priceInc,
+                img: cat.img
+            });
+        }
+
+        let cart = [];
+        const menuGrid = document.getElementById('menuGrid');
+        const cartCounter = document.getElementById('cartCounter');
+        const cartModal = document.getElementById('cartModal');
+        const cartItemsBox = document.getElementById('cartItemsBox');
+        const totalPriceEl = document.getElementById('totalPrice');
+
+        function renderMenu(itemsToRender) {
+            menuGrid.innerHTML = '';
+            itemsToRender.forEach(item => {
+                menuGrid.innerHTML += `
+                    <div class="food-card">
+                        <img src="${item.img}" alt="${item.name}" class="food-img">
+                        <div class="food-content">
+                            <h3>${item.name}</h3>
+                            <p>${item.desc}</p>
+                            <div class="card-footer">
+                                <span class="price">${item.price} ج.م</span>
+                                <button class="add-btn" onclick="addToCart(${item.id})">أضف للسلة</button>
+                            </div>
+                        </div>
                     </div>
                 `;
             });
-            selectGalleryItem(0);
         }
 
-        initGalleryContent();
-    </script>
-</body>
-</html>
+        function filterMenu() {
+            const query = document.getElementById('searchBox').value.toLowerCase();
+            const filtered = menuItems.filter(item => item.name.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query));
+            renderMenu(filtered);
+        }
+
+        function addToCart(id) {
+            const item = menuItems.find(p => p.id === id);
+            cart.push(item);
+            updateCart();
+        }
+
+        function updateCart() {
+            cartCounter.innerText = cart.length;
+            cartItemsBox.innerHTML = '';
+            let total = 0;
+
+            if (cart.length === 0) {
+                cartItemsBox.innerHTML = '<p style="text-align:center; color:#777;">السلة فارغة حالياً</p>';
+            } else {
+                cart.forEach((prod, index) => {
+                    total += prod.price;
+                    cartItemsBox.innerHTML += `
+                        <div class="cart-row">
+                            <img src="${prod.img}" alt="${prod.name}">
+                            <div class="cart-info">
+                                <h4>${prod.name}</h4>
+                                <p>${prod.price} ج.م</p>
+                            </div>
+                            <button onclick="removeItem(${index})" style="background:transparent; border:none; color:#ff4d4d; cursor:pointer; font-size:16px;">✕</button>
+                        </div>
+                    `;
+                });
+            }
+            totalPriceEl.innerText = الإجمالي: ${total} ج.م;
