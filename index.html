@@ -1,1 +1,252 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hany Store - واجهة سينمائية تفاعلية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
+        body {
+            background-color: #121214;
+            color: #ffffff;
+            transition: background-color 0.8s ease;
+            overflow-x: hidden;
+        }
+
+        /* --- واجهة اللمبة السينمائية --- */
+        .lamp-section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            border-bottom: 2px solid #2a2a2e;
+        }
+
+        .lamp-container {
+            position: relative;
+            cursor: pointer;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .lamp-icon {
+            font-size: 80px;
+            transition: transform 0.3s ease;
+        }
+
+        .lamp-container:hover .lamp-icon {
+            transform: translateY(10px);
+        }
+
+        .pull-string {
+            width: 4px;
+            height: 60px;
+            background: #d4af37;
+            margin: 0 auto;
+            position: relative;
+            cursor: ns-resize;
+        }
+
+        .pull-string::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -6px;
+            width: 16px;
+            height: 16px;
+            background: #ffd700;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ffd700;
+        }
+
+        /* حالة إضاءة اللمبة */
+        body.light-on {
+            background-color: #f0f2f5;
+            color: #121214;
+        }
+
+        body.light-on .login-card {
+            background: #ffffff;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        body.light-on .login-card input {
+            background: #f8f9fa;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        /* صندوق تسجيل الدخول السينمائي */
+        .login-card {
+            background: #1e1e24;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            width: 350px;
+            text-align: center;
+            transition: all 0.5s ease;
+        }
+
+        .login-card h2 {
+            margin-bottom: 20px;
+            color: #d4af37;
+        }
+
+        .login-card input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #2a2a32;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: #fff;
+            outline: none;
+        }
+
+        .login-card button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #d4af37, #aa8c2c);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: opacity 0.3s;
+        }
+
+        .login-card button:hover {
+            opacity: 0.9;
+        }
+
+        .switch-btn {
+            margin-top: 20px;
+            background: transparent;
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .switch-btn:hover {
+            background: #d4af37;
+            color: #121214;
+        }
+
+        /* --- واجهة البورتفوليو والظهور التدريجي (Scroll Reveal) --- */
+        .portfolio-section {
+            padding: 100px 20px;
+            min-height: 100vh;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .reveal-item {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            margin-bottom: 50px;
+            background: #1a1a20;
+            padding: 30px;
+            border-radius: 12px;
+            border-right: 4px solid #d4af37;
+        }
+
+        .reveal-item.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-item h3 {
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- الواجهة الأولى: اللمبة والتفاعل السينمائي -->
+    <section class="lamp-section" id="lampSection">
+        <div class="lamp-container" onclick="toggleLight()">
+            <div class="lamp-icon" id="lampIcon">💡</div>
+            <div class="pull-string"></div>
+            <p style="margin-top: 10px; font-size: 14px; color: #d4af37;">اضغط أو اسحب لتشغيل الإضاءة</p>
+        </div>
+
+        <div class="login-card">
+            <h2>Welcome</h2>
+            <input type="text" placeholder="Username">
+            <input type="password" placeholder="Password">
+            <button>Sign In</button>
+        </div>
+
+        <button class="switch-btn" onclick="scrollToPortfolio()">انتقل للواجهة السينمائية التانية 👇</button>
+    </section>
+
+    <!-- الواجهة الثانية: عناصر تظهر تدريجياً مع الاسكرول -->
+    <section class="portfolio-section" id="portfolioSection">
+        <h2 style="text-align: center; margin-bottom: 50px; color: #d4af37;">معرض أعمالي والتصميمات السينمائية</h2>
+        
+        <div class="reveal-item">
+            <h3>01. التصميم التفاعلي (Interactive UI)</h3>
+            <p>هنا يتم عرض تفاصيل المهارات والخدمات بطريقة انسيابية ومريحة للعين تظهر تدريجياً مع حركة التمرير.</p>
+        </div>
+
+        <div class="reveal-item">
+            <h3>02. هندسة الواجهات الأمامية (Frontend Architecture)</h3>
+            <p>بناء مواقع سريعة وخفيفة ومتوافقة مع جميع الأجهزة بدون الحاجة لقواعد بيانات معقدة.</p>
+        </div>
+
+        <div class="reveal-item">
+            <h3>03. أنظمة العرض والتضمين (Smart Embeds)</h3>
+            <p>إدارة الفيديوهات والمحتويات المرئية بأعلى كفاءة وأداء متميز لضمان سرعة التحميل.</p>
+        </div>
+    </section>
+
+    <!-- الجافاسكريبت للتحكم والتشغيل التفاعلي -->
+    <script>
+        // وظيفة تشغيل وإطفاء اللمبة والوضع السينمائي
+        function toggleLight() {
+            document.body.classList.toggle('light-on');
+            const lampIcon = document.getElementById('lampIcon');
+            if (document.body.classList.contains('light-on')) {
+                lampIcon.textContent = '☀️';
+            } else {
+                lampIcon.textContent = '💡';
+            }
+        }
+
+        // الانتقال السلس للواجهة الثانية
+        function scrollToPortfolio() {
+            document.getElementById('portfolioSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // مراقبة حركة الاسكرول لإظهار العناصر تدريجياً (Scroll Reveal)
+        window.addEventListener('scroll', function() {
+            const reveals = document.querySelectorAll('.reveal-item');
+            
+            reveals.forEach(element => {
+                const windowHeight = window.innerHeight;
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+
+                if (elementTop < windowHeight - elementVisible) {
+                    element.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
