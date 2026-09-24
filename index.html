@@ -3,412 +3,713 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FastFeast Enterprise - نظام إدارة المطعم الذكي المتكامل</title>
+    <title>متجرك العصري - الأناقة والاحترافية</title>
+    <!-- خطوط جوجل العربية الفخمة -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- أيقونات FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #0b0f19; color: #f3f4f6; overflow-x: hidden; position: relative; }
-        
-        /* تلوين وتنسيق الخلفية والكانفاس */
-        #spaceCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-
-        header { background: rgba(17, 24, 39, 0.9); backdrop-filter: blur(10px); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2937; position: sticky; top: 0; z-index: 1000; }
-        .logo { font-size: 24px; font-weight: bold; color: #f97316; display: flex; align-items: center; gap: 10px; }
-        nav ul { display: flex; list-style: none; gap: 20px; }
-        nav ul li a { color: #d1d5db; text-decoration: none; transition: 0.3s; font-weight: 500; }
-        nav ul li a:hover { color: #f97316; }
-        
-        .hero { text-align: center; padding: 70px 20px; background: linear-gradient(135deg, rgba(31, 41, 55, 0.8), rgba(17, 24, 39, 0.9)); border-bottom: 1px solid #374151; }
-        .hero h1 { font-size: 42px; margin-bottom: 15px; color: #ffffff; text-shadow: 0 2px 10px rgba(249, 115, 22, 0.3); }
-        .hero p { color: #9ca3af; font-size: 18px; max-width: 650px; margin: 0 auto 25px auto; }
-        
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        .section-title { font-size: 28px; margin-bottom: 25px; border-right: 4px solid #f97316; padding-right: 15px; color: #ffffff; display: flex; justify-content: space-between; align-items: center; }
-        
-        .categories-bar { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 25px; }
-        .cat-btn { background: #1f2937; color: #d1d5db; border: 1px solid #374151; padding: 10px 20px; border-radius: 30px; cursor: pointer; transition: 0.3s; white-space: nowrap; font-weight: bold; }
-        .cat-btn.active, .cat-btn:hover { background: #f97316; color: #fff; border-color: #f97316; }
-
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-        .food-card { background: rgba(31, 41, 55, 0.7); backdrop-filter: blur(5px); border-radius: 12px; overflow: hidden; border: 1px solid #374151; transition: transform 0.3s, box-shadow 0.3s; }
-        .food-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(249, 115, 22, 0.2); border-color: #f97316; }
-        .food-img { width: 100%; height: 160px; background: linear-gradient(45deg, #111827, #374151); display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 14px; font-weight: bold; }
-        .food-info { padding: 20px; }
-        .food-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #ffffff; }
-        .food-desc { font-size: 14px; color: #9ca3af; margin-bottom: 15px; line-height: 1.5; }
-        .food-footer { display: flex; justify-content: space-between; align-items: center; }
-        .food-price { font-size: 18px; font-weight: bold; color: #f97316; }
-        .btn-add { background: #f97316; color: #ffffff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: 0.3s; font-weight: bold; }
-        .btn-add:hover { background: #ea580c; box-shadow: 0 0 10px rgba(249,115,22,0.5); }
-
-        .cart-floating-btn { position: fixed; bottom: 30px; left: 30px; background: #f97316; color: #fff; padding: 15px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 20px rgba(249, 115, 22, 0.5); z-index: 999; display: flex; align-items: center; gap: 10px; transition: 0.3s; }
-        .cart-floating-btn:hover { transform: scale(1.05); }
-
-        footer { background: #111827; text-align: center; padding: 30px; border-top: 1px solid #1f2937; color: #9ca3af; margin-top: 60px; }
-    </style>
-</head>
-<body>
-
-    <!-- الجزء الخاص بالرسوم المتحركة في الخلفية (Space Canvas) -->
-    <canvas id="spaceCanvas"></canvas>
-
-    <header>
-        <div class="logo">⚡ FastFeast Enterprise</div>
-        <nav>
-            <ul>
-                <li><a href="#">الرئيسية</a></li>
-                <li><a href="#">قائمة الطعام</a></li>
-                <li><a href="#">العروض والخصومات</a></li>
-                <li><a href="#">تقييمات العملاء</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <div class="hero">
-        <h1>أشهى الأطباق والمأكولات السريعة</h1>
-        <p>نظام ذكي متكامل لطلب وتوصيل الطعام بأعلى جودة وأسرع وقت ممكن مع تجربة مستخدم عصرية وفريدة.</p>
-    </div>
-
-    <div class="container">
-        <h2 class="section-title">
-            <span>قائمة الطعام المميزة</span>
-        </h2>
-
-        <!-- تصنيفات الأكل الفعالة -->
-        <div class="categories-bar" id="categoriesBar">
-            <button class="cat-btn active" onclick="filterMenu('all')">الكل</button>
-            <button class="cat-btn" onclick="filterMenu('shawarma')">شاورما سوري</button>
-            <button class="cat-btn" onclick="filterMenu('crepe')">كريبات مقرمشة</button>
-            <button class="cat-btn" onclick="filterMenu('burger')">برجر لحم وفراخ</button>
-            <button class="cat-btn" onclick="filterMenu('pizza')">بيتزا ومعجنات</button>
-            <button class="cat-btn" onclick="filterMenu('pasta')">مكرونات فاخرة</button>
-            <button class="cat-btn" onclick="filterMenu('dessert')">حلويات ومشروبات</button>
-        </div>
-
-        <div class="menu-grid" id="menuGridContainer">
-            <!-- سيتم توليد العناصر هنا برمجياً -->
-        </div>
-    </div>
-
-    <div class="cart-floating-btn" onclick="toggleCartModal()">
-        🛒 سلة المشتريات (<span id="cartCounter">0</span>)
-    </div>
-
-    <footer>
-        <p>جميع الحقوق محفوظة © 2026 FastFeast Enterprise - نظام إدارة المطاعم المتقدم والذكي</p>
-    </footer>
-
-    <script>
-        // ----------------------------------------------------
-        // [الجزء الأول: الرسوم المتحركة والخلفية البصرية Canvas]
-        // ----------------------------------------------------
-        const canvas = document.getElementById('spaceCanvas');
-        const ctx = canvas.getContext('2d');
-        let particlesArray = [];
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        class SpaceParticle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2;
-                this.speedX = (Math.random() - 0.5) * 0.5;
-                this.speedY = (Math.random() - 0.5) * 0.5;
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.x > canvas.width) this.x = 0;
-                if (this.x < 0) this.x = canvas.width;
-                if (this.y > canvas.height) this.y = 0;
-                if (this.y < 0) this.y = canvas.height;
-            }
-            draw() {
-                ctx.fillStyle = 'rgba(249, 115, 22, 0.5)';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
+        /* ==========================================
+           1. المتغيرات الأساسية وأنظمة الألوان الخرافية
+           ========================================== */
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --secondary: #a855f7;
+            --accent: #ec4899;
+            --dark-bg: #0b0f19;
+            --card-bg: rgba(17, 24, 39, 0.75);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --success: #10b981;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        function initSpaceParticles() {
-            particlesArray = [];
-            let numberOfParticles = (canvas.width * canvas.height) / 9000;
-            for (let i = 0; i < numberOfParticles; i++) {
-                particlesArray.push(new SpaceParticle());
-            }
-        }
-        initSpaceParticles();
-
-        function animateSpaceCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particlesArray.forEach(p => {
-                p.update();
-                p.draw();
-            });
-            requestAnimationFrame(animateSpaceCanvas);
-        }
-        animateSpaceCanvas();
-
-        // ----------------------------------------------------
-        // [الجزء الثاني: قائمة الطعام وقاعدة البيانات والتحكم]
-        // ----------------------------------------------------
-        const menuItems = [
-            { id: 1, name: "شاورما سوري دجاج", desc: "شاورما دجاج مبرمة مع الثومية والبطاطس الساخنة", price: 85, category: "shawarma" },
-            { id: 2, name: "كريب زووم مكس لحوم", desc: "شيش طاووق، استربس، ولحمة مفرومة مع جبنة موتزاريلا", price: 120, category: "crepe" },
-            { id: 3, name: "برجر تشيز تاور", desc: "قطعتين لحم بقرى، صوص الجبن الشيدر، بصل كاراميل", price: 145, category: "burger" },
-            { id: 4, name: "بيتزا سوبر سي فود", desc: "جمبري، كالماري، وفلفل رومي مع جبنة موتزاريلا مضاعفة", price: 180, category: "pizza" },
-            { id: 5, name: "مكرونة وايت صوص دجاج", desc: "مكرونة بيني مع قطع الدجاج الطرية وصوص المشروم الأبيض", price: 110, category: "pasta" },
-            { id: 6, name: "مشروب ميلك شيك شوكولاتة", desc: "آيس كريم شوكولاتة غني مع صوص الفدج البارد", price: 55, category: "dessert" }
-        ];
-
-        let cart = [];
-        let activeOrdersLog = [];
-
-        function renderMenu(itemsToRender) {
-            const gridContainer = document.getElementById('menuGridContainer');
-            gridContainer.innerHTML = '';
-            itemsToRender.forEach(item => {
-                let card = document.createElement('div');
-                card.className = 'food-card';
-                card.innerHTML = `
-                    <div class="food-img">صورة ${item.name}</div>
-                    <div class="food-info">
-                        <div class="food-title">${item.name}</div>
-                        <div class="food-desc">${item.desc}</div>
-                        <div class="food-footer">
-                            <span class="food-price">${item.price} ج.م</span>
-                            <button class="btn-add" onclick="addItemToCart(${item.id})">أضف للسلة</button>
-                        </div>
-                    </div>
-                `;
-                gridContainer.appendChild(card);
-            });
+        [data-theme="light"] {
+            --dark-bg: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(0, 0, 0, 0.08);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
         }
 
-        function filterMenu(categoryKey) {
-            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            if(categoryKey === 'all') {
-                renderMenu(menuItems);
-            } else {
-                let filtered = menuItems.filter(i => i.category === categoryKey);
-                renderMenu(filtered);
-            }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+            scroll-behavior: smooth;
         }
 
-        function addItemToCart(id) {
-            let selectedItem = menuItems.find(i => i.id === id);
-            if(selectedItem) {
-                cart.push(selectedItem);
-                updateCartCounter();
-                showSystemToast(تمت إضافة "${selectedItem.name}" إلى السلة بنجاح.);
-            }
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
 
-        function updateCartCounter() {
-            document.getElementById('cartCounter').innerText = cart.length;
+        /* خلفية تفاعلية متحركة (Background Glow) */
+        .bg-glow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
         }
 
-        function showSystemToast(message, type = "success") {
-            let toast = document.createElement('div');
-            toast.innerText = message;
-            toast.style.position = 'fixed';
-            toast.style.bottom = '90px';
-            toast.style.left = '30px';
-            toast.style.background = type === "success" ? '#10b981' : '#ef4444';
-            toast.style.color = '#fff';
-            toast.style.padding = '12px 20px';
-            toast.style.borderRadius = '8px';
-            toast.style.zIndex = '10000';
-            toast.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
-            toast.style.fontWeight = 'bold';
-            document.body.appendChild(toast);
-            setTimeout(() => { toast.remove(); }, 3000);
+        .glow-ball {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            animation: floatGlow 15s infinite alternate ease-in-out;
         }
 
-        function toggleCartModal() {
-            if(cart.length === 0) {
-                showSystemToast("سلة المشتريات فارغة حالياً!", "error");
-            } else {
-                let total = cart.reduce((sum, item) => sum + item.price, 0);
-                showSystemToast(إجمالي السلة الحالي: ${total} ج.م (${cart.length} منتج));
-            }
+        .glow-1 {
+            width: 450px;
+            height: 450px;
+            background: var(--primary);
+            top: -100px;
+            right: -100px;
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            renderMenu(menuItems);
-        });
-
-        // ----------------------------------------------------
-        // [الجزء الثالث: أنظمة إدارة الطلبات، الطاولات، التقييمات، والخدمات المتقدمة]
-        // ----------------------------------------------------
-        class OrderProcessingSystem {
-            constructor() {
-                this.ordersQueue = [];
-            }
-            submitNewOrder(customerName, phone, address, itemsList) {
-                let orderID = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
-                let totalAmount = itemsList.reduce((sum, i) => sum + i.price, 0);
-                let newOrder = {
-                    id: orderID,
-                    client: customerName,
-                    phoneNum: phone,
-                    shippingAddress: address,
-                    products: itemsList,
-                    total: totalAmount,
-                    timestamp: new Date().toLocaleTimeString(),
-                    status: 'قيد التحضير والتجهيز'
-                };
-                this.ordersQueue.push(newOrder);
-                activeOrdersLog.push(newOrder);
-                return newOrder;
-            }
-        }
-        const centralOrderProcessor = new OrderProcessingSystem();
-
-        const tableReservationSystem = {
-            tables: {
-                vip: { count: 4, capacity: 6, status: 'available' },
-                standard: { count: 12, capacity: 4, status: 'available' },
-                outdoor: { count: 8, capacity: 2, status: 'available' }
-            },
-            verifyTableAvailability(type) {
-                return this.tables[type] && this.tables[type].count > 0;
-            }
-        };
-
-        class CustomerFeedbackSystem {
-            constructor() {
-                this.reviews = [];
-            }
-            addReview(clientName, rating, comment) {
-                this.reviews.push({ client: clientName, rate: rating, text: comment, date: new Date().toLocaleDateString() });
-                showSystemToast("شكراً لتقييمك، نعتز برأيك دائماً!");
-            }
-            getAverageRating() {
-                if(this.reviews.length === 0) return 5.0;
-                let sum = this.reviews.reduce((acc, r) => acc + r.rate, 0);
-                return (sum / this.reviews.length).toFixed(1);
-            }
-        }
-        const restaurantReviews = new CustomerFeedbackSystem();
-
-        const deliveryTracker = {
-            drivers: [
-                { id: 101, name: "كابتن محمود", status: "متاح", zone: "المنطقة المركزية" },
-                { id: 102, name: "كابتن إبراهيم", status: "في رحلة توصيل", zone: "المنطقة الشمالية" },
-                { id: 103, name: "كابتن أحمد", status: "متاح", zone: "المنطقة الجنوبية" }
-            ],
-            assignOptimalDriver() {
-                let availableDriver = this.drivers.find(d => d.status === "متاح");
-                if(availableDriver) {
-                    availableDriver.status = "في رحلة توصيل";
-                    return availableDriver.name;
-                }
-                return "أقرب مندوب متاح";
-            }
-        };
-
-        function sanitizeInputData(inputStr) {
-            return inputStr.replace(/<[^>]*>?/gm, '').trim();
+        .glow-2 {
+            width: 500px;
+            height: 500px;
+            background: var(--secondary);
+            bottom: -150px;
+            left: -150px;
+            animation-delay: -5s;
         }
 
-        const taxAndServiceCalculator = {
-            vatRate: 0.14,
-            serviceRate: 0.12,
-            calculateNetTotal(subtotal, includeService = false) {
-                let vat = subtotal * this.vatRate;
-                let service = includeService ? (subtotal * this.serviceRate) : 0;
-                return {
-                    sub: subtotal,
-                    vatAmount: vat.toFixed(2),
-                    serviceAmount: service.toFixed(2),
-                    finalPayable: (subtotal + vat + service).toFixed(2)
-                };
-            }
-        };
-
-        const managementReports = {
-            generateDailySummary(totalSalesAmount, totalOrdersCount) {
-                return {
-                    reportDate: new Date().toLocaleDateString(),
-                    sales: totalSalesAmount,
-                    orders: totalOrdersCount,
-                    averageOrderValue: totalOrdersCount > 0 ? (totalSalesAmount / totalOrdersCount).toFixed(2) : 0
-                };
-            }
-        };
-
-        const loyaltyProgram = {
-            customerPoints: {},
-            addPoints(phone, spentAmount) {
-                if(!this.customerPoints[phone]) this.customerPoints[phone] = 0;
-                let earned = Math.floor(spentAmount / 10);
-                this.customerPoints[phone] += earned;
-                return this.customerPoints[phone];
-            }
-        };
-
-        const persistentStorageManager = {
-            saveCartState(cartData) {
-                localStorage.setItem('fastfeast_cart_backup', JSON.stringify(cartData));
-            },
-            loadCartState() {
-                let saved = localStorage.getItem('fastfeast_cart_backup');
-                return saved ? JSON.parse(saved) : [];
-            }
-        };
-
-        window.addEventListener('offline', () => { showSystemToast("انقطع الاتصال بالإنترنت، يرجى التحقق من الشبكة.", "error"); });
-        window.addEventListener('online', () => { showSystemToast("تم استعادة الاتصال بالإنترنت بنجاح."); });
-
-        function generateRandomPromoCode() {
-            let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            let code = "FF-";
-            for(let i=0; i<5; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return code;
+        @keyframes floatGlow {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, 80px) scale(1.1); }
+            100% { transform: translate(-30px, 50px) scale(0.9); }
         }
 
-        window.addEventListener('error', (event) => {
-            console.warn("Caught unexpected runtime exception:", event.message);
-        });
-
-        function validatePhoneNumberEgypt(phoneNum) {
-            let egyptRegex = /^(010|011|012|015)[0-9]{8}$/;
-            return egyptRegex.test(phoneNum);
+        /* ==========================================
+           2. شريط التنقل العلوي (Navbar)
+           ========================================== */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            backdrop-filter: blur(16px);
+            background: rgba(11, 15, 25, 0.8);
+            border-bottom: 1px solid var(--card-border);
+            transition: var(--transition);
         }
 
-        const SYSTEM_CONFIG_CONSTANTS = {
-            APP_NAME: "FastFeast Enterprise",
-            BUILD_TAG: "2026-PRODUCTION-STABLE",
-            MAX_CART_LIMIT: 50,
-            CURRENCY_UNIT: "ج.م"
-        };
-
-        function sanitizeCustomerNotes(rawNotes) {
-            if(!rawNotes) return "لا توجد ملاحظات إضافية";
-            return rawNotes.substring(0, 150).replace(/[<>]/g, '');
+        [data-theme="light"] header {
+            background: rgba(248, 250, 252, 0.8);
         }
 
-        function triggerWelcomeGreetingForNewVisitor() {
-            let isFirstVisit = !localStorage.getItem('fastfeast_visited_before');
-            if(isFirstVisit) {
-                console.log("Welcome to FastFeast Enterprise! Enjoy our exquisite menu & systems.");
-                localStorage.setItem('fastfeast_visited_before', 'true');
-            }
+        .nav-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        triggerWelcomeGreetingForNewVisitor();
 
-        console.log("FastFeast Enterprise Full System & Canvas Integration Complete. Ready for Editor.");
-    </script>
-</body>
-</html>
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            right: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after, .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .action-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .action-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px var(--primary-glow);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--accent);
+            color: white;
+            font-size: 0.75rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        /* ==========================================
+           3. قسم الواجهة الرئيسية (Hero Section)
+           ========================================== */
+        .hero {
+            max-width: 1300px;
+            margin: 140px auto 60px;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-content h1 span {
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-content p {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 0.9rem 2.2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            box-shadow: 0 10px 25px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px var(--primary-glow);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .hero-banner-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: floatCard 6s ease-in-out infinite;
+        }
+
+        @keyframes floatCard {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .hero-banner-card img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+        }
+
+        .badge-floating {
+            position: absolute;
+            top: 35px;
+            right: 35px;
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        /* ==========================================
+           4. قسم التصنيفات والفلترة (Categories & Filter)
+           ========================================== */
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.8rem;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 0.7rem 1.8rem;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 5px 20px var(--primary-glow);
+        }
+
+        /* ==========================================
+           5. شبكة المنتجات (Products Grid & Cards)
+           ========================================== */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 5rem;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: var(--transition);
+            position: relative;
+            backdrop-filter: blur(15px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px var(--primary-glow);
+        }
+
+        .product-image-box {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+        }
+
+        .product-image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .product-card:hover .product-image-box img {
+            transform: scale(1.1);
+        }
+
+        .product-tag {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(99, 102, 241, 0.9);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            backdrop-filter: blur(4px);
+        }
+
+        .product-details {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .product-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.2rem;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            border-top: 1px solid var(--card-border);
+            padding-top: 1rem;
+        }
+
+        .product-price {
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .product-price span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .add-to-cart-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-to-cart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px var(--primary-glow);
+        }
+
+        /* ==========================================
+           6. سلة التسوق الجانبية (Cart Drawer)
+           ========================================== */
+        .cart-drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .cart-drawer-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            left: -450px;
+            width: 100%;
+            max-width: 420px;
+            height: 100%;
+            background: var(--dark-bg);
+            border-right: 1px solid var(--card-border);
+            z-index: 2001;
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+            transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-drawer.open {
+            left: 0;
+        }
+
+        .cart-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h3 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-cart {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-cart:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .cart-items-container {
+            padding: 1.5rem 2rem;
+            overflow-y: auto;
+            flex-grow: 1;
+            max-height: calc(100vh - 250px);
+        }
+
+        .empty-cart-message {
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: 4rem;
+        }
+
+        .empty-cart-message i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 1rem;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 1rem;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            align-items: center;
+            position: relative;
+        }
+
+        .cart-item img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .cart-item-info h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .cart-item-price {
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 10px;
+            border-radius: 8px;
+            width: fit-content;
+        }
+
+        .qty-btn {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .qty-btn:hover {
+            color: var(--primary);
+        }
+
+        .remove-item-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .remove-item-btn:hover {
+            color: var(--accent);
+        }
+
+        .cart-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--card-border);
+            background: var(--card-bg);
+        }
+
+        .cart-total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+        }
+
+        .cart-total-row span:last-child {
+            color: var(--primary);
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.6);
+        }
+
+        /* ==========================================
+           7. نافذة إتمام الطلب (Checkout Modal)
+           ========================================== */
+        .modal-overlay {
+            posi
