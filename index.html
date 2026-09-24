@@ -3,15 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FastFeast - مطعم الفضاء السريع</title>
+    <title>FastFeast - النظام السينمائي المتكامل لإدارة المطاعم والطلبات</title>
     <style>
+        /* ==========================================================================
+           1. التصميم العام والمتغيرات الأساسية (CSS Variables & Reset)
+           ========================================================================== */
         :root {
-            --bg-deep: #0c0c0c;
-            --bg-card: #141414;
+            --bg-deep: #080808;
+            --bg-surface: #121212;
+            --bg-card: #181818;
             --primary-color: #f39c12;
+            --primary-hover: #e67e22;
             --text-color: #ffffff;
-            --text-muted: #b2b2b2;
-            --accent-glow: rgba(243, 156, 18, 0.4);
+            --text-muted: #999999;
+            --accent-glow: rgba(243, 156, 18, 0.35);
+            --danger: #e74c3c;
+            --success: #2ecc71;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
@@ -30,6 +39,9 @@
             position: relative;
         }
 
+        /* ==========================================================================
+           2. طبقة الخلفية الفضائية السينمائية الحية (Canvas Background)
+           ========================================================================== */
         #spaceCanvas {
             position: fixed;
             top: 0;
@@ -37,9 +49,12 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #0c0c0c 100%);
+            background: radial-gradient(circle at center, #151515 0%, #050505 100%);
         }
 
+        /* ==========================================================================
+           3. شريط التنقل العلوي الاحترافي (Navbar Header)
+           ========================================================================== */
         header {
             position: fixed;
             top: 0;
@@ -49,23 +64,25 @@
             justify-content: space-between;
             align-items: center;
             padding: 20px 60px;
-            background: rgba(12, 12, 12, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(8, 8, 8, 0.92);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border-color);
             z-index: 1000;
         }
 
         .logo {
-            font-size: 24px;
-            font-weight: bold;
+            font-size: 26px;
+            font-weight: 800;
             font-style: italic;
             color: var(--text-color);
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--accent-glow);
         }
 
         nav ul {
             display: flex;
-            gap: 35px;
+            gap: 40px;
             list-style: none;
         }
 
@@ -73,28 +90,53 @@
             color: var(--text-muted);
             text-decoration: none;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             text-transform: uppercase;
-            transition: color 0.3s;
+            transition: var(--transition-smooth);
+            position: relative;
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            right: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: var(--transition-smooth);
         }
 
         nav ul li a:hover, nav ul li a.active {
             color: var(--primary-color);
         }
 
+        nav ul li a:hover::after, nav ul li a.active::after {
+            width: 100%;
+        }
+
         .header-left {
             display: flex;
             align-items: center;
-            gap: 25px;
+            gap: 30px;
         }
 
         .header-icons {
             display: flex;
-            gap: 20px;
+            gap: 22px;
             align-items: center;
             color: var(--text-muted);
-            font-size: 16px;
+            font-size: 18px;
             cursor: pointer;
+        }
+
+        .header-icons span {
+            transition: var(--transition-smooth);
+        }
+
+        .header-icons span:hover {
+            color: var(--primary-color);
+            transform: scale(1.1);
         }
 
         .cart-icon-wrapper {
@@ -104,89 +146,117 @@
 
         .cart-counter {
             position: absolute;
-            top: -8px;
-            right: -10px;
+            top: -9px;
+            right: -12px;
             background: var(--primary-color);
             color: #000;
             font-size: 11px;
-            font-weight: bold;
-            padding: 2px 6px;
+            font-weight: 800;
+            padding: 2px 7px;
             border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary-color);
         }
 
         .order-online-btn {
             background-color: var(--primary-color);
             color: #000;
-            padding: 10px 22px;
-            border-radius: 25px;
-            font-weight: bold;
+            padding: 12px 26px;
+            border-radius: 30px;
+            font-weight: 800;
             font-size: 13px;
             text-transform: uppercase;
             border: none;
             cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
+            transition: var(--transition-smooth);
+            box-shadow: 0 4px 15px var(--accent-glow);
         }
 
         .order-online-btn:hover {
-            transform: scale(1.05);
-            background-color: #e67e22;
+            transform: translateY(-2px) scale(1.05);
+            background-color: var(--primary-hover);
+            box-shadow: 0 6px 20px var(--accent-glow);
         }
 
+        /* ==========================================================================
+           4. واجهة العرض الرئيسية (Hero Section)
+           ========================================================================== */
         .hero-container {
             max-width: 1200px;
-            margin: 160px auto 60px auto;
+            margin: 180px auto 80px auto;
             padding: 0 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 40px;
+            gap: 50px;
         }
 
         .hero-text {
-            max-width: 550px;
+            max-width: 600px;
         }
 
         .hero-text h1 {
-            font-size: 52px;
+            font-size: 56px;
             font-weight: 300;
             font-style: italic;
             color: var(--text-color);
-            margin-bottom: 20px;
-            line-height: 1.2;
+            margin-bottom: 25px;
+            line-height: 1.15;
+        }
+
+        .hero-text h1 span {
+            color: var(--primary-color);
+            font-weight: 800;
         }
 
         .hero-text p {
-            font-size: 14px;
+            font-size: 15px;
             color: var(--text-muted);
-            line-height: 1.7;
-            margin-bottom: 30px;
+            line-height: 1.8;
+            margin-bottom: 35px;
         }
 
         .hero-btn {
             background-color: var(--primary-color);
             color: #000;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-weight: bold;
+            padding: 14px 35px;
+            border-radius: 30px;
+            font-weight: 800;
             border: none;
             cursor: pointer;
-            font-size: 14px;
-            transition: 0.2s;
+            font-size: 15px;
+            transition: var(--transition-smooth);
+            box-shadow: 0 5px 20px var(--accent-glow);
         }
 
         .hero-btn:hover {
-            background-color: #e67e22;
+            background-color: var(--primary-hover);
+            transform: translateY(-3px);
+        }
+
+        .hero-image {
+            position: relative;
         }
 
         .hero-image img {
-            max-width: 450px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            max-width: 480px;
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--border-color);
+            transition: var(--transition-smooth);
         }
 
+        .hero-image img:hover {
+            transform: scale(1.02);
+            border-color: var(--primary-color);
+        }
+
+        /* ==========================================================================
+           5. قسم قائمة الطعام وتصفية الأصناف (Menu & Search Section)
+           ========================================================================== */
         .menu-section {
             max-width: 1200px;
-            margin: 0 auto 80px auto;
+            margin: 0 auto 100px auto;
             padding: 0 20px;
         }
 
@@ -194,118 +264,146 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 15px;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 20px;
         }
 
         .section-title {
-            font-size: 28px;
+            font-size: 32px;
             color: var(--primary-color);
+            font-weight: 700;
         }
 
         .search-box {
-            padding: 8px 15px;
-            background: #181818;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 20px;
+            padding: 12px 20px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
             color: #fff;
-            font-size: 14px;
-            width: 250px;
+            font-size: 15px;
+            width: 300px;
             outline: none;
+            transition: var(--transition-smooth);
         }
 
         .search-box:focus {
             border-color: var(--primary-color);
+            box-shadow: 0 0 15px var(--accent-glow);
         }
 
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 30px;
         }
 
         .food-card {
             background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
             overflow: hidden;
-            transition: transform 0.3s, border-color 0.3s;
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .food-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-10px);
             border-color: var(--primary-color);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+        }
+
+        .food-img-container {
+            width: 100%;
+            height: 190px;
+            overflow: hidden;
+            position: relative;
         }
 
         .food-img {
             width: 100%;
-            height: 180px;
+            height: 100%;
             object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .food-card:hover .food-img {
+            transform: scale(1.1);
         }
 
         .food-content {
-            padding: 18px;
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .food-content h3 {
-            font-size: 17px;
+            font-size: 18px;
             color: var(--text-color);
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+            font-weight: 700;
         }
 
         .food-content p {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-muted);
-            margin-bottom: 12px;
-            line-height: 1.4;
-            height: 35px;
-            overflow: hidden;
+            margin-bottom: 18px;
+            line-height: 1.5;
         }
 
         .card-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 12px;
         }
 
         .price {
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 18px;
+            font-weight: 800;
             color: var(--primary-color);
         }
 
         .add-btn {
             background: transparent;
-            border: 1px solid var(--primary-color);
+            border: 2px solid var(--primary-color);
             color: var(--primary-color);
-            padding: 6px 14px;
+            padding: 8px 18px;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-            transition: 0.2s;
+            font-size: 13px;
+            font-weight: 700;
+            transition: var(--transition-smooth);
         }
 
         .add-btn:hover {
             background: var(--primary-color);
             color: #000;
+            box-shadow: 0 0 15px var(--accent-glow);
         }
 
+        /* ==========================================================================
+           6. نافذة سلة المشتريات والطلبات المتقدمة (Cart & Checkout Modal)
+           ========================================================================== */
         .modal-overlay {
             position: fixed;
             inset: 0;
             background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(12px);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 2000;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.4s ease;
         }
 
         .modal-overlay.active {
@@ -314,45 +412,53 @@
         }
 
         .modal-card {
-            background: #181818;
+            background: var(--bg-surface);
             border: 2px solid var(--primary-color);
-            border-radius: 20px;
-            padding: 30px;
-            width: 480px;
+            border-radius: 24px;
+            padding: 35px;
+            width: 520px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 0 40px var(--accent-glow);
+            box-shadow: 0 0 60px var(--accent-glow);
+            transform: scale(0.9);
+            transition: transform 0.4s ease;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
         }
 
         .modal-card h2 {
             color: var(--primary-color);
-            margin-bottom: 15px;
-            font-size: 22px;
+            margin-bottom: 20px;
+            font-size: 24px;
             text-align: center;
+            font-weight: 800;
         }
 
         .cart-items-box {
-            max-height: 220px;
+            max-height: 250px;
             overflow-y: auto;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
+            padding-right: 5px;
         }
 
         .cart-row {
             display: flex;
             align-items: center;
-            gap: 12px;
-            background: #111;
-            padding: 8px 12px;
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.05);
+            gap: 15px;
+            background: var(--bg-card);
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
         }
 
         .cart-row img {
-            width: 50px;
-            height: 50px;
+            width: 55px;
+            height: 55px;
             object-fit: cover;
             border-radius: 8px;
         }
@@ -362,86 +468,132 @@
         }
 
         .cart-info h4 {
-            font-size: 14px;
+            font-size: 15px;
             color: #fff;
+            margin-bottom: 4px;
         }
 
         .cart-info p {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .remove-item-btn {
+            background: transparent;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+            transition: var(--transition-smooth);
+        }
+
+        .remove-item-btn:hover {
+            transform: scale(1.2);
         }
 
         .total-price {
-            font-size: 18px;
-            font-weight: bold;
+            font-size: 20px;
+            font-weight: 800;
             color: var(--primary-color);
             text-align: left;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
         }
 
         .checkout-form {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 15px;
+        }
+
+        .checkout-form h3 {
+            color: var(--primary-color);
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 5px;
         }
 
         .checkout-form input, .checkout-form textarea {
             width: 100%;
-            padding: 11px;
-            background: #111;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
+            padding: 13px 18px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
             color: #fff;
             font-size: 14px;
             outline: none;
+            transition: var(--transition-smooth);
         }
 
         .checkout-form input:focus, .checkout-form textarea:focus {
             border-color: var(--primary-color);
+            box-shadow: 0 0 10px var(--accent-glow);
         }
 
         .form-btns {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             margin-top: 10px;
         }
 
         .btn-send {
             flex: 1;
-            background-color: var(--primary-color);
+            background-color: var(--success);
             border: none;
-            padding: 12px;
-            color: #000;
-            font-weight: bold;
-            border-radius: 8px;
+            padding: 14px;
+            color: #fff;
+            font-weight: 800;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 15px;
+            font-size: 16px;
+            transition: var(--transition-smooth);
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .btn-send:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
         }
 
         .btn-close {
             background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 12px 18px;
+            border: 1px solid var(--border-color);
+            padding: 14px 22px;
             color: #fff;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition-smooth);
         }
 
+        .btn-close:hover {
+            border-color: #fff;
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* ==========================================================================
+           7. تذييل الصفحة (Footer)
+           ========================================================================== */
         footer {
             text-align: center;
-            padding: 30px;
-            background: #080808;
-            border-top: 1px solid rgba(255,255,255,0.05);
+            padding: 40px;
+            background: #050505;
+            border-top: 1px solid var(--border-color);
             color: var(--text-muted);
-            font-size: 13px;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
 
+    <!-- طبقة الخلفية الفضائية التفاعلية -->
     <canvas id="spaceCanvas"></canvas>
 
+    <!-- شريط التنقل العلوي -->
     <header>
         <div class="logo">FastFeast</div>
         <nav>
@@ -454,21 +606,22 @@
         </nav>
         <div class="header-left">
             <div class="header-icons">
-                <span>👤</span>
-                <div class="cart-icon-wrapper" onclick="openCartModal()">
+                <span title="الملف الشخصي">👤</span>
+                <div class="cart-icon-wrapper" onclick="openCartModal()" title="سلة المشتريات">
                     🛒
                     <span class="cart-counter" id="cartCounter">0</span>
                 </div>
-                <span>🔍</span>
+                <span title="البحث">🔍</span>
             </div>
             <button class="order-online-btn" onclick="openCartModal()">Order Online</button>
         </div>
     </header>
 
+    <!-- واجهة البانر السينمائية -->
     <div class="hero-container">
         <div class="hero-text">
-            <h1>Delicious Fast Food</h1>
-            <p>أطلب الآن أشهى وجبات الشاورما، الكريب الساخن، والبرجر الطازج بأسعار حقيقية وتوصيل سريع حتى باب البيت.</p>
+            <h1>Delicious <span>Fast Food</span></h1>
+            <p>أطلب الآن أشهى الوجبات السريعة والسورية، الشاورما الصاروخ، الكريبات المقرمشة، والبرجر الطازج بأسعار حقيقية وتوصيل سريع حتى باب البيت.</p>
             <button class="hero-btn" onclick="document.getElementById('menuSection').scrollIntoView({behavior: 'smooth'})">Order Now</button>
         </div>
         <div class="hero-image">
@@ -476,120 +629,33 @@
         </div>
     </div>
 
+    <!-- قسم قائمة الـ 17 وجبة الحقيقية والمحرك البحثي -->
     <div class="menu-section" id="menuSection">
         <div class="section-header">
-            <h2 class="section-title">قائمة الـ 17 وجبة المميزة</h2>
-            <input type="text" id="searchBox" class="search-box" placeholder="ابحث عن الشاورما، الكريب..." oninput="filterMenu()">
+            <h2 class="section-title">قائمة الأصناف الفاخرة (17 صنفاً)</h2>
+            <input type="text" id="searchBox" class="search-box" placeholder="ابحث عن الشاورما، الكريب، البرجر..." oninput="filterMenu()">
         </div>
         <div class="menu-grid" id="menuGrid">
-            <!-- الـ 17 وجبة الحقيقية -->
+            <!-- سيتم توليد العناصر برمجياً عبر الـ JavaScript -->
         </div>
     </div>
 
+    <!-- نافذة السلة وتأكيد الأوردر الشاملة -->
     <div class="modal-overlay" id="cartModal">
         <div class="modal-card">
             <h2>سلة المشتريات والطلبات</h2>
-            <div class="cart-items-box" id="cartItemsBox"></div>
+            <div class="cart-items-box" id="cartItemsBox">
+                <!-- عناصر السلة -->
+            </div>
             <div class="total-price" id="totalPrice">الإجمالي: 0 ج.م</div>
 
             <div class="checkout-form">
-                <h3 style="color: var(--primary-color); font-size: 15px; margin-bottom: 2px;">بيانات الاستلام</h3>
+                <h3>بيانات الاستلام والتوصيل</h3>
                 <input type="text" id="custName" placeholder="الاسم الكامل">
                 <input type="text" id="custPhone" placeholder="رقم التليفون">
-                <input type="text" id="custAddress" placeholder="العنوان بالتفصيل (المكان والشارع)">
+                <input type="text" id="custAddress" placeholder="العنوان بالتفصيل (المكان والشارع والمنطقة)">
                 <textarea id="custNotes" placeholder="ملاحظات إضافية (اختياري)" rows="2"></textarea>
                 
                 <div class="form-btns">
                     <button class="btn-send" onclick="sendOrderToWhatsApp()">إرسال الأوردر (واتساب)</button>
-                    <button class="btn-close" onclick="closeCartModal()">إغلاق</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <footer>
-        FastFeast Online Restaurant © 2026 - All Rights Reserved
-    </footer>
-
-    <script>
-        const canvas = document.getElementById('spaceCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        const stars = [];
-        for (let i = 0; i < 150; i++) {
-            stars.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                radius: Math.random() * 1.5,
-                speed: Math.random() * 0.4 + 0.1,
-                alpha: Math.random()
-            });
-        }
-
-        function animateSpace() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#ffffff';
-            stars.forEach(star => {
-                ctx.globalAlpha = star.alpha;
-                ctx.beginPath();
-                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-                ctx.fill();
-                star.y -= star.speed;
-                if (star.y < 0) {
-                    star.y = canvas.height;
-                    star.x = Math.random() * canvas.width;
-                }
-                star.alpha += (Math.random() - 0.5) * 0.04;
-                if (star.alpha < 0.2) star.alpha = 0.2;
-                if (star.alpha > 0.9) star.alpha = 0.9;
-            });
-            requestAnimationFrame(animateSpace);
-        }
-        animateSpace();
-
-        /* الـ 17 أكلة الحقيقية (شاورما، كريبات، برجر، بيتزا، إلخ) مع أسعارها الحقيقية */
-        const menuItems = [
-            { id: 1, name: "ساندوتش شاورما لحم دبل", desc: "لحم متبل على الطريقة السورية مع الطحينة والخيار المخلل.", price: 75, img: "https://images.unsplash.com/photo-1529042410759-befb1204b468?w=800" },
-            { id: 2, name: "ساندوتش شاورما فراخ صاروخ", desc: "فراخ مشوية بالبهارات الخاصة مع الثومية والبطاطس المقرمشة.", price: 65, img: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=800" },
-            { id: 3, name: "كريب شاورما فراخ مكس جندل", desc: "كريب مقرمش محشو شاورما فراخ مع جبنة موتزاريلا وثومية.", price: 95, img: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=800" },
-            { id: 4, name: "كريب زنگر فراخ حار", desc: "قطع استربس حارة مقرمشة مع صوص الشيدر والمايونيز.", price: 90, img: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=800" },
-            { id: 5, name: "كريب شيكولاتة نوتيلا بالموز", desc: "كريب حلو مغطى بنوتيلا أصلية وشرائح الموز الطازجة.", price: 70, img: "https://images.unsplash.com/photo-1519676867240-f03562e64548?w=800" },
-            { id: 6, name: "برجر لحم دبل تشيز", desc: "قطعتين برجر لحم صافي مع شريحة جبنة شيدر مذابة وصوص مدخن.", price: 130, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800" },
-            { id: 7, name: "برجر فراخ كريسبي ماستر", desc: "صدور دجاج مقرمشة مع الخس الطازج ومايونيز بالثوم.", price: 110, img: "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=800" },
-            { id: 8, name: "بيتزا مكس جبن وسط", desc: "موتزاريلا، رومي، شيدر، وجبنة بلو تشيز مع صوص الطماطم.", price: 140, img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800" },
-            { id: 9, name: "بيتزا بيبروني حارة", desc: "شرائح البيبروني المدخن مع الفلفل الحار والموتزاريلا السائحة.", price: 165, img: "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=800" },
-            { id: 10, name: "مكرونة بالسجق الشرقي", desc: "مكرونة بينا مع قطع السجق البلدي المشوح وصوص الطماطم الحار.", price: 85, img: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=800" },
-            { id: 11, name: "مكرونة وايت صوص بالفراخ", desc: "مكرونة فوتوسييني مع قطع الفراخ والمشروم والصوص الأبيض.", price: 105, img: "https://images.unsplash.com/photo-1645112411341-6c4fd023714a?w=800" },
-            { id: 12, name: "وجبة استربس دجاج (5 قطع)", desc: "قطع دجاج مقرمشة تقدم مع البطاطس، الصوص، والخبز.", price: 120, img: "https://images.unsplash.com/photo-1626559597141-2ec643e2d537?w=800" },
-            { id: 13, name: "حواشي لحمة بلدي مميز", desc: "رغيف حواوشي محشو لحم بلدي متبل بالبهارات والخضروات.", price: 50, img: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=800" },
-            { id: 14, name: "بطاطس بالجبنة والبيكون", desc: "بطاطس محمرة مقرمشة مغطاة بصوص الشيدر الغني وقطع البيكون.", price: 60, img: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=800" },
-            { id: 15, name: "سلطة كول سلو منعشة", desc: "ملفوف مبشور وجزر مع صوص المايونيز الحلو الخاص.", price: 35, img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800" },
-            { id: 16, name: "مولتن كيك شوكلت دافئ",ج: "كيك شوكولاتة غني بصوص الشوكولاتة الساخن من الداخل.", price: 65, img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800" },
-            { id: 17, name: "بيبسي علبة مثلج", desc: "مشروب غازي منعش بارد ليزيد من متعة الوجبة.", price: 20, img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=800" }
-        ];
-
-        let cart = [];
-
-        const menuGrid = document.getElementById('menuGrid');
-        const cartCounter = document.getElementById('cartCounter');
-        const cartModal = document.getElementById('cartModal');
-        const cartItemsBox = document.getElementById('cartItemsBox');
-        const totalPriceEl = document.getElementById('totalPrice');
-
-        function renderMenu(itemsToRender) {
-            menuGrid.innerHTML = '';
-            itemsToRender.forEach(item => {
-                menuGrid.innerHTML += `
-                    <div class="food-card">
-                        <img src="${item.img}" alt="${item.name}" class="food-img">
-                        <div class="food-content">
-                            <h3>${item.name}</h3>
-                            <p>${item.desc}</p>
-                            <div class="c
+                    <button class="btn-close" onclick="closeCartModal()">إغلاق
