@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fast-food {Hany} </title>
+    <title>FastFeast - مطعم الفضاء السريع</title>
     <style>
         :root {
             --bg-deep: #0c0c0c;
@@ -30,7 +30,6 @@
             position: relative;
         }
 
-        /* خلفية الفضاء المتحركة */
         #spaceCanvas {
             position: fixed;
             top: 0;
@@ -41,7 +40,6 @@
             background: radial-gradient(circle at center, #1a1a1a 0%, #0c0c0c 100%);
         }
 
-        /* شريط التنقل العلوي */
         header {
             position: fixed;
             top: 0;
@@ -134,7 +132,6 @@
             background-color: #e67e22;
         }
 
-        /* البانر الرئيسي */
         .hero-container {
             max-width: 1200px;
             margin: 160px auto 60px auto;
@@ -187,7 +184,6 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
 
-        /* قسم القائمة الكبرى (170 وجبة) */
         .menu-section {
             max-width: 1200px;
             margin: 0 auto 80px auto;
@@ -298,7 +294,6 @@
             color: #000;
         }
 
-        /* نافذة السلة وتأكيد الأوردر */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -473,7 +468,7 @@
     <div class="hero-container">
         <div class="hero-text">
             <h1>Delicious Fast Food</h1>
-            <p>استمتع بتجربة فريدة مع تشكيلتنا الضخمة التي تضم عدة وجبات  فاخرة من البرجر، البيتزا، المشويات، والحلويات المحضرة بعناية فائقة لترضي جميع الأذواق.</p>
+            <p>أطلب الآن أشهى وجبات الشاورما، الكريب الساخن، والبرجر الطازج بأسعار حقيقية وتوصيل سريع حتى باب البيت.</p>
             <button class="hero-btn" onclick="document.getElementById('menuSection').scrollIntoView({behavior: 'smooth'})">Order Now</button>
         </div>
         <div class="hero-image">
@@ -483,11 +478,11 @@
 
     <div class="menu-section" id="menuSection">
         <div class="section-header">
-            <h2 class="section-title">Our Complete Menu (170 Items)</h2>
-            <input type="text" id="searchBox" class="search-box" placeholder="ابحث عن وجبتك المفضلة..." oninput="filterMenu()">
+            <h2 class="section-title">قائمة الـ 17 وجبة المميزة</h2>
+            <input type="text" id="searchBox" class="search-box" placeholder="ابحث عن الشاورما، الكريب..." oninput="filterMenu()">
         </div>
         <div class="menu-grid" id="menuGrid">
-            <!-- سيتم توليد الـ 170 صنف تلقائياً هنا -->
+            <!-- الـ 17 وجبة الحقيقية -->
         </div>
     </div>
 
@@ -559,30 +554,29 @@
         }
         animateSpace();
 
-        /* توليد 170 وجبة بتنوع كامل وأسعار وصور دقيقة */
-        const baseCategories = [
-            { name: "برجر كلاسيكي وفضاء", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800", basePrice: 150 },
-            { name: "بيتزا إيطالية ونيازك", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800", basePrice: 190 },
-            { name: "مكرونة وباستا سريعة", img: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=800", basePrice: 130 },
-            { name: "سلطات ومقبلات طازجة", img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800", basePrice: 85 },
-            { name: "مشويات ودجاج مقرمش", img: "https://images.unsplash.com/photo-1626559597141-2ec643e2d537?w=800", basePrice: 170 },
-            { name: "حلويات ومشروبات باردة", img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=800", basePrice: 75 }
+        /* الـ 17 أكلة الحقيقية (شاورما، كريبات، برجر، بيتزا، إلخ) مع أسعارها الحقيقية */
+        const menuItems = [
+            { id: 1, name: "ساندوتش شاورما لحم دبل", desc: "لحم متبل على الطريقة السورية مع الطحينة والخيار المخلل.", price: 75, img: "https://images.unsplash.com/photo-1529042410759-befb1204b468?w=800" },
+            { id: 2, name: "ساندوتش شاورما فراخ صاروخ", desc: "فراخ مشوية بالبهارات الخاصة مع الثومية والبطاطس المقرمشة.", price: 65, img: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=800" },
+            { id: 3, name: "كريب شاورما فراخ مكس جندل", desc: "كريب مقرمش محشو شاورما فراخ مع جبنة موتزاريلا وثومية.", price: 95, img: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=800" },
+            { id: 4, name: "كريب زنگر فراخ حار", desc: "قطع استربس حارة مقرمشة مع صوص الشيدر والمايونيز.", price: 90, img: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=800" },
+            { id: 5, name: "كريب شيكولاتة نوتيلا بالموز", desc: "كريب حلو مغطى بنوتيلا أصلية وشرائح الموز الطازجة.", price: 70, img: "https://images.unsplash.com/photo-1519676867240-f03562e64548?w=800" },
+            { id: 6, name: "برجر لحم دبل تشيز", desc: "قطعتين برجر لحم صافي مع شريحة جبنة شيدر مذابة وصوص مدخن.", price: 130, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800" },
+            { id: 7, name: "برجر فراخ كريسبي ماستر", desc: "صدور دجاج مقرمشة مع الخس الطازج ومايونيز بالثوم.", price: 110, img: "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=800" },
+            { id: 8, name: "بيتزا مكس جبن وسط", desc: "موتزاريلا، رومي، شيدر، وجبنة بلو تشيز مع صوص الطماطم.", price: 140, img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800" },
+            { id: 9, name: "بيتزا بيبروني حارة", desc: "شرائح البيبروني المدخن مع الفلفل الحار والموتزاريلا السائحة.", price: 165, img: "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=800" },
+            { id: 10, name: "مكرونة بالسجق الشرقي", desc: "مكرونة بينا مع قطع السجق البلدي المشوح وصوص الطماطم الحار.", price: 85, img: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=800" },
+            { id: 11, name: "مكرونة وايت صوص بالفراخ", desc: "مكرونة فوتوسييني مع قطع الفراخ والمشروم والصوص الأبيض.", price: 105, img: "https://images.unsplash.com/photo-1645112411341-6c4fd023714a?w=800" },
+            { id: 12, name: "وجبة استربس دجاج (5 قطع)", desc: "قطع دجاج مقرمشة تقدم مع البطاطس، الصوص، والخبز.", price: 120, img: "https://images.unsplash.com/photo-1626559597141-2ec643e2d537?w=800" },
+            { id: 13, name: "حواشي لحمة بلدي مميز", desc: "رغيف حواوشي محشو لحم بلدي متبل بالبهارات والخضروات.", price: 50, img: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=800" },
+            { id: 14, name: "بطاطس بالجبنة والبيكون", desc: "بطاطس محمرة مقرمشة مغطاة بصوص الشيدر الغني وقطع البيكون.", price: 60, img: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=800" },
+            { id: 15, name: "سلطة كول سلو منعشة", desc: "ملفوف مبشور وجزر مع صوص المايونيز الحلو الخاص.", price: 35, img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800" },
+            { id: 16, name: "مولتن كيك شوكلت دافئ",ج: "كيك شوكولاتة غني بصوص الشوكولاتة الساخن من الداخل.", price: 65, img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800" },
+            { id: 17, name: "بيبسي علبة مثلج", desc: "مشروب غازي منعش بارد ليزيد من متعة الوجبة.", price: 20, img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=800" }
         ];
 
-        let menuItems = [];
-        for (let i = 1; i <= 170; i++) {
-            let cat = baseCategories[(i - 1) % baseCategories.length];
-            let priceInc = ((i * 7) % 120);
-            menuItems.push({
-                id: i,
-                name: وجبة ${cat.name.split(' ')[0]} الفاخرة #${i},
-                desc: وصف تحضيري مميز للصنف رقم ${i} مكون من أجود المكونات الطازجة والتوابل الخاصة.,
-                price: cat.basePrice + priceInc,
-                img: cat.img
-            });
-        }
-
         let cart = [];
+
         const menuGrid = document.getElementById('menuGrid');
         const cartCounter = document.getElementById('cartCounter');
         const cartModal = document.getElementById('cartModal');
@@ -598,48 +592,4 @@
                         <div class="food-content">
                             <h3>${item.name}</h3>
                             <p>${item.desc}</p>
-                            <div class="card-footer">
-                                <span class="price">${item.price} ج.م</span>
-                                <button class="add-btn" onclick="addToCart(${item.id})">أضف للسلة</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function filterMenu() {
-            const query = document.getElementById('searchBox').value.toLowerCase();
-            const filtered = menuItems.filter(item => item.name.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query));
-            renderMenu(filtered);
-        }
-
-        function addToCart(id) {
-            const item = menuItems.find(p => p.id === id);
-            cart.push(item);
-            updateCart();
-        }
-
-        function updateCart() {
-            cartCounter.innerText = cart.length;
-            cartItemsBox.innerHTML = '';
-            let total = 0;
-
-            if (cart.length === 0) {
-                cartItemsBox.innerHTML = '<p style="text-align:center; color:#777;">السلة فارغة حالياً</p>';
-            } else {
-                cart.forEach((prod, index) => {
-                    total += prod.price;
-                    cartItemsBox.innerHTML += `
-                        <div class="cart-row">
-                            <img src="${prod.img}" alt="${prod.name}">
-                            <div class="cart-info">
-                                <h4>${prod.name}</h4>
-                                <p>${prod.price} ج.م</p>
-                            </div>
-                            <button onclick="removeItem(${index})" style="background:transparent; border:none; color:#ff4d4d; cursor:pointer; font-size:16px;">✕</button>
-                        </div>
-                    `;
-                });
-            }
-            totalPriceEl.innerText = الإجمالي: ${total} ج.م;
+                            <div class="c
